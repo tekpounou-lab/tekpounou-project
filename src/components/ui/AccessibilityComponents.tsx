@@ -1,8 +1,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ExclamationTriangleIcon, CheckCircleIcon, InformationCircleIcon, XCircleIcon } from '@heroicons/react/24/solid';
+import {
+  ExclamationTriangleIcon,
+  CheckCircleIcon,
+  InformationCircleIcon,
+  XCircleIcon,
+} from '@heroicons/react/24/solid';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
+//
+// ========== Accessible Alert ==========
+//
 interface AccessibleAlertProps {
   type: 'success' | 'error' | 'warning' | 'info';
   title?: string;
@@ -20,7 +28,8 @@ const alertConfig = {
     iconColor: 'text-green-400',
     titleColor: 'text-green-800 dark:text-green-200',
     messageColor: 'text-green-700 dark:text-green-300',
-    buttonColor: 'text-green-500 hover:text-green-600 dark:text-green-400 dark:hover:text-green-300'
+    buttonColor:
+      'text-green-500 hover:text-green-600 dark:text-green-400 dark:hover:text-green-300',
   },
   error: {
     icon: XCircleIcon,
@@ -29,7 +38,8 @@ const alertConfig = {
     iconColor: 'text-red-400',
     titleColor: 'text-red-800 dark:text-red-200',
     messageColor: 'text-red-700 dark:text-red-300',
-    buttonColor: 'text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300'
+    buttonColor:
+      'text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300',
   },
   warning: {
     icon: ExclamationTriangleIcon,
@@ -38,7 +48,8 @@ const alertConfig = {
     iconColor: 'text-yellow-400',
     titleColor: 'text-yellow-800 dark:text-yellow-200',
     messageColor: 'text-yellow-700 dark:text-yellow-300',
-    buttonColor: 'text-yellow-500 hover:text-yellow-600 dark:text-yellow-400 dark:hover:text-yellow-300'
+    buttonColor:
+      'text-yellow-500 hover:text-yellow-600 dark:text-yellow-400 dark:hover:text-yellow-300',
   },
   info: {
     icon: InformationCircleIcon,
@@ -47,8 +58,9 @@ const alertConfig = {
     iconColor: 'text-blue-400',
     titleColor: 'text-blue-800 dark:text-blue-200',
     messageColor: 'text-blue-700 dark:text-blue-300',
-    buttonColor: 'text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300'
-  }
+    buttonColor:
+      'text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300',
+  },
 };
 
 export const AccessibleAlert: React.FC<AccessibleAlertProps> = ({
@@ -57,7 +69,7 @@ export const AccessibleAlert: React.FC<AccessibleAlertProps> = ({
   message,
   dismissible = true,
   onDismiss,
-  className = ''
+  className = '',
 }) => {
   const config = alertConfig[type];
   const Icon = config.icon;
@@ -67,18 +79,13 @@ export const AccessibleAlert: React.FC<AccessibleAlertProps> = ({
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      className={`
-        ${config.bgColor} ${config.borderColor} border rounded-lg p-4 ${className}
-      `}
+      className={`${config.bgColor} ${config.borderColor} border rounded-lg p-4 ${className}`}
       role="alert"
       aria-live="polite"
     >
       <div className="flex items-start">
         <div className="flex-shrink-0">
-          <Icon 
-            className={`h-5 w-5 ${config.iconColor}`} 
-            aria-hidden="true" 
-          />
+          <Icon className={`h-5 w-5 ${config.iconColor}`} aria-hidden="true" />
         </div>
         <div className="ml-3 flex-1">
           {title && (
@@ -86,7 +93,9 @@ export const AccessibleAlert: React.FC<AccessibleAlertProps> = ({
               {title}
             </h3>
           )}
-          <div className={`${title ? 'mt-1' : ''} text-sm ${config.messageColor}`}>
+          <div
+            className={`${title ? 'mt-1' : ''} text-sm ${config.messageColor}`}
+          >
             {message}
           </div>
         </div>
@@ -94,11 +103,9 @@ export const AccessibleAlert: React.FC<AccessibleAlertProps> = ({
           <div className="ml-4 flex-shrink-0">
             <button
               onClick={onDismiss}
-              className={`
-                inline-flex rounded-md p-1.5 ${config.buttonColor}
+              className={`inline-flex rounded-md p-1.5 ${config.buttonColor}
                 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2
-                focus:ring-pink-500 transition-colors duration-200
-              `}
+                focus:ring-pink-500 transition-colors duration-200`}
               aria-label="Dismiss alert"
             >
               <XMarkIcon className="h-4 w-4" aria-hidden="true" />
@@ -110,6 +117,9 @@ export const AccessibleAlert: React.FC<AccessibleAlertProps> = ({
   );
 };
 
+//
+// ========== Accessible Modal ==========
+//
 interface AccessibleModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -123,7 +133,7 @@ const modalSizes = {
   sm: 'max-w-md',
   md: 'max-w-2xl',
   lg: 'max-w-4xl',
-  xl: 'max-w-6xl'
+  xl: 'max-w-6xl',
 };
 
 export const AccessibleModal: React.FC<AccessibleModalProps> = ({
@@ -132,9 +142,8 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
   title,
   children,
   size = 'md',
-  closeOnOverlayClick = true
+  closeOnOverlayClick = true,
 }) => {
-  // Handle escape key
   React.useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -144,7 +153,6 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
 
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
-      // Prevent body scroll
       document.body.style.overflow = 'hidden';
     }
 
@@ -176,49 +184,46 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
           onClick={closeOnOverlayClick ? onClose : undefined}
           aria-hidden="true"
         />
-        
+
         {/* Modal Content */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className={`
-            relative w-full ${modalSizes[size]} bg-white dark:bg-gray-800 rounded-xl shadow-2xl
-            border border-gray-200 dark:border-gray-700 overflow-hidden
-          `}
+          className={`relative w-full ${modalSizes[size]} bg-white dark:bg-gray-800 rounded-xl shadow-2xl
+            border border-gray-200 dark:border-gray-700 overflow-hidden`}
         >
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-            <h2 
-              id="modal-title" 
+            <h2
+              id="modal-title"
               className="text-xl font-semibold text-gray-900 dark:text-white"
             >
               {title}
             </h2>
             <button
               onClick={onClose}
-              className="
-                p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200
+              className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200
                 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg
                 focus:outline-none focus:ring-2 focus:ring-pink-500
-                transition-colors duration-200
-              "
+                transition-colors duration-200"
               aria-label="Close modal"
             >
               <XMarkIcon className="h-5 w-5" aria-hidden="true" />
             </button>
           </div>
-          
+
           {/* Content */}
-          <div className="p-6">
-            {children}
-          </div>
+          <div className="p-6">{children}</div>
         </motion.div>
       </div>
     </motion.div>
   );
 };
 
+//
+// ========== Accessible Tooltip ==========
+//
 interface AccessibleTooltipProps {
   content: string;
   children: React.ReactElement;
@@ -232,7 +237,7 @@ export const AccessibleTooltip: React.FC<AccessibleTooltipProps> = ({
   children,
   placement = 'top',
   delay = 300,
-  className = ''
+  className = '',
 }) => {
   const [isVisible, setIsVisible] = React.useState(false);
   const [timeoutId, setTimeoutId] = React.useState<NodeJS.Timeout | null>(null);
@@ -244,9 +249,7 @@ export const AccessibleTooltip: React.FC<AccessibleTooltipProps> = ({
   };
 
   const hideTooltip = () => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
+    if (timeoutId) clearTimeout(timeoutId);
     setIsVisible(false);
   };
 
@@ -254,11 +257,11 @@ export const AccessibleTooltip: React.FC<AccessibleTooltipProps> = ({
     top: 'bottom-full left-1/2 transform -translate-x-1/2 mb-2',
     bottom: 'top-full left-1/2 transform -translate-x-1/2 mt-2',
     left: 'right-full top-1/2 transform -translate-y-1/2 mr-2',
-    right: 'left-full top-1/2 transform -translate-y-1/2 ml-2'
+    right: 'left-full top-1/2 transform -translate-y-1/2 ml-2',
   };
 
   return (
-    <div 
+    <div
       className={`relative inline-block ${className}`}
       onMouseEnter={showTooltip}
       onMouseLeave={hideTooltip}
@@ -267,9 +270,9 @@ export const AccessibleTooltip: React.FC<AccessibleTooltipProps> = ({
     >
       {React.cloneElement(children, {
         'aria-describedby': tooltipId,
-        ...children.props
+        ...children.props,
       })}
-      
+
       {isVisible && (
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -277,21 +280,16 @@ export const AccessibleTooltip: React.FC<AccessibleTooltipProps> = ({
           exit={{ opacity: 0, scale: 0.95 }}
           id={tooltipId}
           role="tooltip"
-          className={`
-            absolute z-50 px-3 py-2 text-sm text-white bg-gray-900 rounded-lg shadow-lg
-            dark:bg-gray-700 pointer-events-none ${placementClasses[placement]}
-          `}
+          className={`absolute z-50 px-3 py-2 text-sm text-white bg-gray-900 rounded-lg shadow-lg
+            dark:bg-gray-700 pointer-events-none ${placementClasses[placement]}`}
         >
           {content}
-          {/* Arrow */}
-          <div 
-            className={`
-              absolute w-2 h-2 bg-gray-900 dark:bg-gray-700 transform rotate-45
+          <div
+            className={`absolute w-2 h-2 bg-gray-900 dark:bg-gray-700 transform rotate-45
               ${placement === 'top' ? 'top-full left-1/2 -translate-x-1/2 -mt-1' : ''}
               ${placement === 'bottom' ? 'bottom-full left-1/2 -translate-x-1/2 -mb-1' : ''}
               ${placement === 'left' ? 'left-full top-1/2 -translate-y-1/2 -ml-1' : ''}
-              ${placement === 'right' ? 'right-full top-1/2 -translate-y-1/2 -mr-1' : ''}
-            `}
+              ${placement === 'right' ? 'right-full top-1/2 -translate-y-1/2 -mr-1' : ''}`}
           />
         </motion.div>
       )}
@@ -299,7 +297,51 @@ export const AccessibleTooltip: React.FC<AccessibleTooltipProps> = ({
   );
 };
 
-// Focus trap hook for accessibility
+//
+// ========== Textarea ==========
+//
+interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+  label?: string;
+  error?: string;
+}
+
+export const Textarea: React.FC<TextareaProps> = ({
+  label,
+  error,
+  className = '',
+  ...props
+}) => {
+  const id = React.useId();
+
+  return (
+    <div className="w-full">
+      {label && (
+        <label
+          htmlFor={id}
+          className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300"
+        >
+          {label}
+        </label>
+      )}
+      <textarea
+        id={id}
+        className={`block w-full rounded-lg border px-3 py-2 text-sm
+          focus:ring-2 focus:ring-pink-500 focus:outline-none
+          dark:bg-gray-800 dark:text-white dark:border-gray-600
+          ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}
+          ${className}`}
+        {...props}
+      />
+      {error && (
+        <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>
+      )}
+    </div>
+  );
+};
+
+//
+// ========== Focus Trap Hook ==========
+//
 export const useFocusTrap = (isActive: boolean) => {
   React.useEffect(() => {
     if (!isActive) return;
@@ -308,7 +350,8 @@ export const useFocusTrap = (isActive: boolean) => {
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
     const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+    const lastElement =
+      focusableElements[focusableElements.length - 1] as HTMLElement;
 
     const handleTabKey = (e: KeyboardEvent) => {
       if (e.key !== 'Tab') return;

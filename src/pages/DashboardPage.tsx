@@ -3,10 +3,10 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 
 // Dashboard pages
-import StudentDashboardPage from './dashboard/StudentDashboardPage'
+import StudentDashboardPage from '@/pages/dashboard/StudentDashboardPage'
 import TeacherDashboardPage from './dashboard/TeacherDashboardPage'
-import DashboardSettingsPage from './dashboard/DashboardSettingsPage'
-import NotificationsPage from './dashboard/NotificationsPage'
+import {DashboardSettingsPage} from '@/pages/dashboard/DashboardSettingsPage'
+import {NotificationsPage} from '@/pages/dashboard/NotificationsPage'
 
 // Common layout (you can swap this with a Sidebar/Topbar component later)
 import Navbar from '../components/layout/Navbar'

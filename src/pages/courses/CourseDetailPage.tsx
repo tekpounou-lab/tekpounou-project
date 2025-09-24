@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Progress } from '@/components/ui/Progress';
-import { DiscussionBoard } from '@/components/courses/DiscussionBoard';
+import   CourseDiscussionBoard  from "@/components/communication/CourseDiscussionBoard";
 import { PaymentModal } from '@/components/payments/PaymentModal';
 import { usePayments } from '@/hooks/usePayments';
 import { formatPrice } from '@/lib/stripe';
@@ -403,7 +403,7 @@ const CourseDetailPage: React.FC = () => {
             {enrollment && activeTab === 'discussion' && (
               <div className="space-y-6">
                 <h2 className="text-2xl font-bold">Course Discussion / Diskisyon Kous la</h2>
-                <DiscussionBoard courseId={id!} />
+                <CourseDiscussionBoard courseId={id!} />
               </div>
             )}
           </div>
