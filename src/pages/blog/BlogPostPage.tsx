@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { User } from "@supabase/supabase-js";
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { Calendar, Eye, Heart, Tag, ArrowLeft, Share2 } from 'lucide-react';

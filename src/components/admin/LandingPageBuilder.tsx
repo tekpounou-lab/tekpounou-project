@@ -15,7 +15,7 @@ import {
 import { toast } from 'react-hot-toast'
 import { motion, DragDropContext, Droppable, Draggable } from 'framer-motion'
 import { useSupabaseClient } from '../providers/SupabaseProvider'
-import { useAuthStore } from '../stores/authStore'
+import { useAuthStore } from '@/stores/authStore'
 import { SEOHead, structuredDataGenerators } from '../common/SEOHead'
 import { NewsletterSignup } from '../marketing/NewsletterSignup'
 import { SocialShare } from '../common/SocialShare'

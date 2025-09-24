@@ -17,7 +17,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { LinkIcon, CheckIcon } from '@heroicons/react/24/outline'
 import { toast } from 'react-hot-toast'
 import { useSupabaseClient } from '../providers/SupabaseProvider'
-import { useAuthStore } from '../stores/authStore'
+import { useAuthStore } from '@/stores/authStore'
 
 interface SocialShareProps {
   url: string

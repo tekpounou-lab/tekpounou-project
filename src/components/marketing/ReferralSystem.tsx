@@ -15,7 +15,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { toast } from 'react-hot-toast'
 import { motion } from 'framer-motion'
 import { useSupabaseClient } from '../providers/SupabaseProvider'
-import { useAuthStore } from '../stores/authStore'
+import { useAuthStore } from '@/stores/authStore'
 import { SocialShare } from '../common/SocialShare'
 
 const referralSchema = z.object({

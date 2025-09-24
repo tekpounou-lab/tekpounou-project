@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { BRAND_COLORS, BRAND_GRADIENT } from '../styles/design-system';
+import { BRAND_COLORS, BRAND_GRADIENT } from '@/styles/design-system';
 
 interface BrandLogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
