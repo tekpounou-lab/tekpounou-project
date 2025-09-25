@@ -4,7 +4,7 @@ import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { Select } from '../ui/Select';
 import { useAI } from '../../hooks/useAI';
-import { useAuthStore } from '../../stores/authStore';
+import { useAuthStore } from '@/stores/authStore';
 import { ToastProvider } from '../ui/ToastProvider';
 
 interface AISettingsProps {
