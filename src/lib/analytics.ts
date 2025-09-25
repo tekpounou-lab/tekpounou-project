@@ -128,16 +128,20 @@ class AnalyticsService {
 
     // Track in our database
     try {
-      await this.supabaseClient.functions.invoke('analytics-tracker', {
-        body: {
-          action: 'track_page_view',
+      await fetch('/.netlify/functions/analytics-events', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          event_type: 'track_page_view',
           page: pageData.page_path,
           title: pageData.page_title,
           userId: this.userId,
           sessionId: this.sessionId,
           utmParams: this.getUTMParameters(),
           metadata: pageData
-        }
+        })
       })
     } catch (error) {
       console.error('Failed to track page view:', error)
@@ -160,10 +164,13 @@ class AnalyticsService {
 
     // Track in our database
     try {
-      await this.supabaseClient.functions.invoke('analytics-tracker', {
-        body: {
-          action: 'track_event',
-          eventType: `${event.category}_${event.action}`,
+      await fetch('/.netlify/functions/analytics-events', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          event_type: `${event.category}_${event.action}`,
           value: event.value || 1,
           userId: this.userId,
           sessionId: this.sessionId,
@@ -174,7 +181,7 @@ class AnalyticsService {
             label: event.label,
             ...event.custom_parameters
           }
-        }
+        })
       })
     } catch (error) {
       console.error('Failed to track event:', error)
@@ -205,9 +212,13 @@ class AnalyticsService {
 
     // Track in our database
     try {
-      await this.supabaseClient.functions.invoke('analytics-tracker', {
-        body: {
-          action: 'track_conversion',
+      await fetch('/.netlify/functions/analytics-events', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          event_type: 'track_conversion',
           conversionType: type,
           value: data.value,
           userId: this.userId,
@@ -216,7 +227,7 @@ class AnalyticsService {
           serviceId: data.relatedType === 'service' ? data.relatedId : undefined,
           referralCode: localStorage.getItem('referral_code'),
           metadata: data
-        }
+        })
       })
     } catch (error) {
       console.error('Failed to track conversion:', error)
@@ -344,17 +355,23 @@ class AnalyticsService {
   // Get analytics data (for admin dashboard)
   async getAnalyticsData(startDate: string, endDate: string, metricTypes?: string[]) {
     try {
-      const { data, error } = await this.supabaseClient.functions.invoke('analytics-tracker', {
-        body: {
-          action: 'get_analytics_data',
-          startDate,
-          endDate,
-          metricTypes
-        }
+      const params = new URLSearchParams({
+        scope: 'dashboard',
+        start_date: startDate,
+        end_date: endDate
       })
+      
+      if (metricTypes && metricTypes.length > 0) {
+        params.append('metric_types', metricTypes.join(','))
+      }
 
-      if (error) throw error
-      return data
+      const response = await fetch(`/.netlify/functions/analytics-summary?${params}`)
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
+      return await response.json()
     } catch (error) {
       console.error('Failed to get analytics data:', error)
       throw error
@@ -364,16 +381,19 @@ class AnalyticsService {
   // Get growth metrics (for admin dashboard)
   async getGrowthMetrics(startDate: string, endDate: string) {
     try {
-      const { data, error } = await this.supabaseClient.functions.invoke('analytics-tracker', {
-        body: {
-          action: 'get_growth_metrics',
-          startDate,
-          endDate
-        }
+      const params = new URLSearchParams({
+        scope: 'dashboard',
+        start_date: startDate,
+        end_date: endDate
       })
 
-      if (error) throw error
-      return data
+      const response = await fetch(`/.netlify/functions/analytics-summary?${params}`)
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
+      return await response.json()
     } catch (error) {
       console.error('Failed to get growth metrics:', error)
       throw error
