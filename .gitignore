@@ -15,7 +15,7 @@ build/
 out/
 
 # Local environment
-.env.local
+.env
 .env.*.local
 !.env.example
 
