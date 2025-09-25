@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // ✅ import useNavigate
 import { Eye, EyeOff, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -9,6 +9,7 @@ import { Card, CardBody, CardHeader } from '@/components/ui/Card';
 import { useAuthStore } from '@/stores/authStore';
 import { RegisterForm, LanguageCode } from '@/types';
 import { isValidEmail, getLanguageDisplayName } from '@/utils';
+import { ROUTES } from '@/routes'; // ✅ use centralized routes
 
 export interface RegisterPageProps {
   onSuccess?: () => void;
@@ -20,6 +21,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const { signUp, isLoading } = useAuthStore();
+  const navigate = useNavigate(); // ✅ init navigate
   
   const {
     register,
@@ -54,9 +56,10 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess }) => {
     if (result.error) {
       setError(result.error);
     } else {
-      setSuccess('Account created successfully! Please check your email to verify your account.');
+      setSuccess('Account created successfully! Redirecting to login...');
       setTimeout(() => {
-        onSuccess?.();
+        onSuccess?.(); 
+        navigate(ROUTES.login); // ✅ redirect to login
       }, 2000);
     }
   };
@@ -182,7 +185,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess }) => {
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Gen kont deja? / Already have an account?{' '}
                 <Link
-                  to="/login"
+                  to={ROUTES.login} // ✅ use centralized route
                   className="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400"
                 >
                   Konekte / Sign in
