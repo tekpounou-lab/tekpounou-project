@@ -1,3 +1,4 @@
+// src/components/layout/Navbar.tsx
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -26,7 +27,8 @@ import { ThemeSwitcher } from '../ui/ThemeSwitcher';
 import { AccessibleTooltip } from '../ui/AccessibilityComponents';
 import { NotificationBell } from '../notifications/NotificationBell';
 import { useAuthStore } from '../../stores/authStore';
-import { BRAND_COLORS, BRAND_GRADIENT } from '../../styles/design-system';
+// ✅ FIXED: Import GRADIENTS instead of BRAND_GRADIENT
+import { GRADIENTS } from '../../styles/design-system'; 
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
@@ -112,21 +114,29 @@ export const Navbar: React.FC = () => {
     setIsProfileMenuOpen(false);
   };
 
+  // ✅ FIXED: Handle roles as an array
   const getDashboardLink = () => {
     if (!user || !profile) return null;
     
-    switch (profile.role) {
-      case 'super_admin':
-        return { href: '/admin/content', label: 'Jesyon Kontni', icon: CogIcon };
-      case 'admin':
-        return { href: '/admin-panel', label: 'Admin Panel', icon: CogIcon };
-      case 'teacher':
-        return { href: '/dashboard/teacher', label: t('nav.dashboard'), icon: CogIcon };
-      case 'sme_client':
-        return { href: '/client', label: t('nav.dashboard'), icon: CogIcon };
-      default:
-        return { href: '/dashboard/student', label: t('nav.dashboard'), icon: UserIcon };
+    // Helper to check if user has a role
+    const hasRole = (role: string) => 
+      Array.isArray(profile.roles) && profile.roles.includes(role);
+    
+    if (hasRole('super_admin')) {
+      return { href: '/admin/content', label: 'Jesyon Kontni', icon: CogIcon };
     }
+    if (hasRole('admin')) {
+      return { href: '/admin-panel', label: 'Admin Panel', icon: CogIcon };
+    }
+    if (hasRole('teacher')) {
+      return { href: '/dashboard/teacher', label: t('nav.dashboard'), icon: CogIcon };
+    }
+    if (hasRole('sme_client')) {
+      return { href: '/client', label: t('nav.dashboard'), icon: CogIcon };
+    }
+    
+    // Default: student or unrecognized role
+    return { href: '/dashboard/student', label: t('nav.dashboard'), icon: UserIcon };
   };
 
   const dashboardLink = getDashboardLink();
@@ -160,8 +170,9 @@ export const Navbar: React.FC = () => {
                   : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
                 }
               `}
+              // ✅ FIXED: Use GRADIENTS.brand
               style={location.pathname === '/' ? { 
-                background: BRAND_GRADIENT 
+                background: GRADIENTS.brand 
               } : {}}
               role="menuitem"
               aria-current={location.pathname === '/' ? 'page' : undefined}
@@ -184,8 +195,9 @@ export const Navbar: React.FC = () => {
                       : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
                     }
                   `}
+                  // ✅ FIXED: Use GRADIENTS.brand
                   style={item.current ? { 
-                    background: BRAND_GRADIENT 
+                    background: GRADIENTS.brand 
                   } : {}}
                   role="menuitem"
                   aria-current={item.current ? 'page' : undefined}
@@ -264,7 +276,8 @@ export const Navbar: React.FC = () => {
                       )}
                       
                       {/* Super Admin Links */}
-                      {profile?.role === 'super_admin' && (
+                      {/* ✅ FIXED: Check roles array */}
+                      {Array.isArray(profile?.roles) && profile.roles.includes('super_admin') && (
                         <Link
                           to="/admin/community"
                           className="
@@ -385,8 +398,9 @@ export const Navbar: React.FC = () => {
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                     }
                   `}
+                  // ✅ FIXED: Use GRADIENTS.brand
                   style={location.pathname === '/' ? { 
-                    background: BRAND_GRADIENT 
+                    background: GRADIENTS.brand 
                   } : {}}
                   onClick={() => setIsMenuOpen(false)}
                   role="menuitem"
@@ -408,8 +422,9 @@ export const Navbar: React.FC = () => {
                           : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                         }
                       `}
+                      // ✅ FIXED: Use GRADIENTS.brand
                       style={item.current ? { 
-                        background: BRAND_GRADIENT 
+                        background: GRADIENTS.brand 
                       } : {}}
                       onClick={() => setIsMenuOpen(false)}
                       role="menuitem"

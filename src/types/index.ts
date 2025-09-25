@@ -1,6 +1,6 @@
 // Base types for the application
 
-export type UserRole = 'super_admin' | 'admin' | 'teacher' | 'student' | 'guest';
+export type UserRole = 'super_admin' | 'admin' | 'teacher' | 'student' | 'guest'|'sme_client';
 export type LanguageCode = 'ht-HT' | 'en-US' | 'fr-FR';
 export type ApplicationStatus = 'pending' | 'approved' | 'rejected';
 
@@ -8,7 +8,7 @@ export type ApplicationStatus = 'pending' | 'approved' | 'rejected';
 export interface User {
   id: string;
   email: string;
-  role: UserRole;
+  roles: UserRole;
   created_at: string;
   updated_at: string;
   last_login?: string;
@@ -25,6 +25,7 @@ export interface Profile {
   created_at: string;
   updated_at: string;
 }
+
 
 // Teacher application
 export interface TeacherApplication {
@@ -305,7 +306,7 @@ export interface AIConversation {
   id: string;
   user_id: string;
   session_id: string;
-  role: 'user' | 'assistant';
+  roles: 'user' | 'assistant';
   message: string;
   response?: string;
   context?: Record<string, any>;
@@ -350,7 +351,7 @@ export interface AIUserPreferences {
 
 export interface AIMessage {
   id: string;
-  role: 'user' | 'assistant';
+  roles: 'user' | 'assistant';
   content: string;
   timestamp: string;
   isTyping?: boolean;
@@ -361,7 +362,7 @@ export interface AIQuickSuggestion {
   text: string;
   action: string;
   icon?: string;
-  role?: UserRole;
+  roles?: UserRole;
 }
 
 export interface AIResponse {
