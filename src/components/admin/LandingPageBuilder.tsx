@@ -13,7 +13,8 @@ import {
   CursorArrowRaysIcon
 } from '@heroicons/react/24/outline'
 import { toast } from 'react-hot-toast'
-import { motion, DragDropContext, Droppable, Draggable } from 'framer-motion'
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd'
+import { motion } from 'framer-motion'
 import { useSupabaseClient } from '../providers/SupabaseProvider'
 import { useAuthStore } from '@/stores/authStore'
 import { SEOHead, structuredDataGenerators } from '../common/SEOHead'
@@ -53,8 +54,9 @@ export function LandingPageBuilder() {
   const [isPreviewMode, setIsPreviewMode] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [landingPageId, setLandingPageId] = useState<string | null>(null)
-  const [courses, setCourses] = useState([])
-  const [services, setServices] = useState([])
+  const [courses, setCourses] = useState<{ id: string; title: string }[]>([]);
+  const [services, setServices] = useState<{ id: string; title: string }[]>([]);
+
 
   const supabase = useSupabaseClient()
   const { user } = useAuthStore()

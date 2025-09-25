@@ -4,6 +4,7 @@ import { cn } from '@/utils';
 interface BadgeProps {
   children: React.ReactNode;
   variant?: 'default' | 'secondary' | 'outline' | 'success' | 'warning' | 'danger';
+  size?: 'sm' | 'md' | 'lg';
   className?: string;
   style?: React.CSSProperties;
 }
@@ -11,11 +12,18 @@ interface BadgeProps {
 export const Badge: React.FC<BadgeProps> = ({ 
   children, 
   variant = 'default', 
+  size = 'md',
   className,
   style 
 }) => {
-  const baseClasses = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium';
-  
+  const baseClasses = 'inline-flex items-center rounded-full font-medium';
+
+  const sizeClasses = {
+    sm: 'px-2 py-0.5 text-xs',
+    md: 'px-2.5 py-0.5 text-sm',
+    lg: 'px-3 py-1 text-base'
+  };
+
   const variantClasses = {
     default: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200',
     secondary: 'bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-gray-300',
@@ -27,7 +35,7 @@ export const Badge: React.FC<BadgeProps> = ({
 
   return (
     <span 
-      className={cn(baseClasses, variantClasses[variant], className)}
+      className={cn(baseClasses, sizeClasses[size], variantClasses[variant], className)}
       style={style}
     >
       {children}

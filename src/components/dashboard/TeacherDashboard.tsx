@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, Users, DollarSign, TrendingUp, Plus, Eye, Settings } from 'lucide-react';
+import { BookOpen, Users, DollarSign, TrendingUp, Plus, Eye, Settings, BarChart3 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { TeacherEarnings } from '@/components/payments/TeacherEarnings';
-import { AnalyticsChart } from '@/components/charts/AnalyticsChart';
+import  AnalyticsChart  from '@/components/charts/AnalyticsChart';
 import { useAuthStore } from '@/stores/authStore';
 import { useTeacherEarnings } from '@/hooks/usePayments';
 import { supabase } from '@/lib/supabase';
@@ -197,7 +197,7 @@ export const TeacherDashboard: React.FC = () => {
             { id: 'overview', name: 'Overview', icon: TrendingUp },
             { id: 'courses', name: 'My Courses', icon: BookOpen },
             { id: 'earnings', name: 'Earnings', icon: DollarSign },
-            { id: 'analytics', name: 'Analytics', icon: AnalyticsChart },
+            { id: 'analytics', name: 'Analytics', icon: BarChart3 },
           ].map((tab) => (
             <button
               key={tab.id}

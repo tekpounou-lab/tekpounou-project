@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { DollarSign, TrendingUp, Clock, CreditCard, Download, Eye } from 'lucide-react';
+import { DollarSign, TrendingUp, Clock, CreditCard, Download } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { useTeacherEarnings } from '@/hooks/usePayments';
 import { formatPrice } from '@/lib/stripe';
-import { AnalyticsChart } from '@/components/charts/AnalyticsChart';
+import AnalyticsChart from '@/components/charts/AnalyticsChart';
 
 interface EarningsSummary {
   total: number;
@@ -17,7 +17,7 @@ interface EarningsSummary {
 }
 
 export const TeacherEarnings: React.FC = () => {
-  const { getTeacherEarnings, getEarningsSummary, requestPayout, loading, error } = useTeacherEarnings();
+  const { getTeacherEarnings, getEarningsSummary, requestPayout, loading } = useTeacherEarnings();
   const [earnings, setEarnings] = useState<any[]>([]);
   const [summary, setSummary] = useState<EarningsSummary | null>(null);
   const [showPayoutModal, setShowPayoutModal] = useState(false);
@@ -60,7 +60,7 @@ export const TeacherEarnings: React.FC = () => {
       case 'available':
         return 'success';
       case 'paid':
-        return 'info';
+        return 'secondary'; // fixed from "info"
       case 'hold':
         return 'danger';
       default:
@@ -230,6 +230,8 @@ export const TeacherEarnings: React.FC = () => {
         <AnalyticsChart
           data={getChartData()}
           type="line"
+          dataKey="value"
+          nameKey="period"
           height={300}
         />
       </Card>
