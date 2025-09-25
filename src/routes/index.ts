@@ -20,17 +20,49 @@ export const ROUTES = {
   services: "/services",
   serviceDetail: (id: string | number = ":id") => `/services/${id}`,
 
+  // Groups (Community)
+  groups: "/groups",
+  groupDetail: (id: string | number = ":id") => `/groups/${id}`,
+
+  // Events
+  events: "/events",
+  eventDetail: (id: string | number = ":id") => `/events/${id}`,
+
+  // Networking (from your project structure: src/pages/networking/)
+  networking: "/networking",
+
+  // News (from your project structure: src/pages/news/)
+  news: "/news",
+
+  // Partners (from your project structure: src/pages/partners/)
+  partners: "/partners",
+
+  // Resources (from your project structure: src/pages/resources/)
+  resources: "/resources",
+
+  // Projects (from your project structure: src/pages/projects/)
+  projects: "/projects",
+
   // Auth
   login: "/auth/login",
   register: "/auth/register",
   resetPassword: "/auth/reset-password",
 
-  // User profile
+  // User profile & certificates
   profile: "/profile",
   certificates: "/certificates",
 
-  // Dashboard (for students, teachers, etc.)
+  // Dashboard (main entry — redirects to role-specific dashboards)
   dashboard: "/dashboard",
+
+  // Role-specific dashboards (optional but aligned with your structure)
+  dashboards: {
+    student: "/dashboard/student",
+    teacher: "/dashboard/teacher",
+    client: "/dashboard/client",
+    settings: "/dashboard/settings",
+    notifications: "/dashboard/notifications",
+  },
 
   // Landing pages (dynamic slugs)
   landingPage: (slug: string = ":slug") => `/landing/${slug}`,
@@ -43,14 +75,14 @@ export const ROUTES = {
     root: "/admin",
     marketing: "/admin/marketing",
     landingPages: "/admin/landing-pages",
-    landingPageNew: "/admin/landing-pages/new", // ✅ renamed for clarity
-    landingPageDetail: (id: string | number = ":id") =>
-      `/admin/landing-pages/${id}`,
+    landingPageNew: "/admin/landing-pages/new",
+    landingPageDetail: (id: string | number = ":id") => `/admin/landing-pages/${id}`,
+    // You may add more admin sub-routes later (e.g., users, payments, etc.)
   },
 
-  // Teacher area (optional if you separate teacher routes)
+  // Teacher area (if used separately from dashboard)
   teacher: "/teacher",
 
-  // Catch-all (NotFound)
+  // Catch-all (for NotFoundPage)
   notFound: "*",
 };

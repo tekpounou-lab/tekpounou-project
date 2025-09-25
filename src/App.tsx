@@ -47,6 +47,8 @@ import AuthPage from "./pages/AuthPage";
 import DashboardPage from "./pages/DashboardPage";
 import LandingPage from "./pages/LandingPage";
 import NewsletterUnsubscribePage from "./pages/NewsletterUnsubscribePage";
+import CommunityPage from "./pages/CommunityPage";
+import CertificatesPage from "./pages/CertificatesPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 // Admin Components
@@ -147,6 +149,8 @@ function App() {
                   <Route path={ROUTES.about} element={<AboutPage />} />
                   <Route path={ROUTES.contact} element={<ContactPage />} />
                   <Route path={ROUTES.pricing} element={<PricingPage />} />
+                  <Route path={ROUTES.community} element={<CommunityPage />} />
+                  <Route path={ROUTES.certificates} element={<CertificatesPage />} />
 
                   {/* Auth Routes (all nested in AuthPage) */}
                   <Route path="/auth/*" element={<AuthPage />} />

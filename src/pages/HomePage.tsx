@@ -5,7 +5,7 @@ import { BookOpen, FileText, Users, Award, ArrowRight, Star } from 'lucide-react
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { ROUTES } from '@/routes';  // ✅ Import centralized routes
+import { ROUTES } from '@/routes';
 
 const HomePage: React.FC = () => {
   const { user } = useAuthStore();
@@ -17,7 +17,7 @@ const HomePage: React.FC = () => {
       titleEn: 'Interactive Courses',
       description: 'Aprann ak kous entraktif yo nan Kreyòl ak lòt lang yo',
       descriptionEn: 'Learn with interactive courses in Creole and other languages',
-      href: ROUTES.courses,   // ✅ use ROUTES
+      href: ROUTES.courses,
       color: 'text-blue-600'
     },
     {
@@ -26,7 +26,7 @@ const HomePage: React.FC = () => {
       titleEn: 'Educational Blog',
       description: 'Li atik ak nouvèl yo sou edikasyon ak teknolòji',
       descriptionEn: 'Read articles and news about education and technology',
-      href: ROUTES.blog,   // ✅ use ROUTES
+      href: ROUTES.blog,
       color: 'text-green-600'
     },
     {
@@ -35,7 +35,7 @@ const HomePage: React.FC = () => {
       titleEn: 'Learning Community',
       description: 'Rankontre ak lòt etidyan ak pwofè yo nan kominote an',
       descriptionEn: 'Connect with other students and teachers in our community',
-      href: ROUTES.community,   // ✅ use ROUTES
+      href: ROUTES.community,
       color: 'text-purple-600'
     },
     {
@@ -44,7 +44,7 @@ const HomePage: React.FC = () => {
       titleEn: 'Earn Certificates',
       description: 'Resevwa sètifika lè ou fini kous yo ak siksè',
       descriptionEn: 'Receive certificates when you complete courses successfully',
-      href: ROUTES.certificates,   // ✅ use ROUTES
+      href: ROUTES.certificates,
       color: 'text-orange-600'
     }
   ];
@@ -111,8 +111,8 @@ const HomePage: React.FC = () => {
           </div>
         </div>
         
-        {/* Background Pattern */}
-        <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+        {/* Background overlay — now non-blocking */}
+        <div className="absolute inset-0 bg-black bg-opacity-20 pointer-events-none"></div>
       </section>
 
       {/* Stats Section */}
@@ -177,7 +177,7 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Featured Content Section (unchanged links except courses) */}
+      {/* Featured Content Section */}
       <section className="py-20 bg-white dark:bg-gray-900">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -218,7 +218,7 @@ const HomePage: React.FC = () => {
               </div>
             </div>
             
-            {/* Sample Course Cards remain the same */}
+            {/* Sample Course Cards would go here — omitted for brevity */}
           </div>
         </div>
       </section>
