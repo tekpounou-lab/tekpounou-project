@@ -18,7 +18,6 @@ import {
   FolderOpenIcon,
   UserGroupIcon
 } from '@heroicons/react/24/outline';
-import { BrandLogo } from '../ui/BrandComponents';
 import { GRADIENTS, BRAND_IDENTITY } from '../../styles/design-system';
 
 interface FooterLinkProps {
@@ -84,7 +83,20 @@ export const Footer: React.FC = () => {
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <div className="mb-6">
-              <BrandLogo size="lg" className="mb-4" />
+              {/* ✅ Updated: Direct logo from /public/logo.png with animation */}
+              <motion.div
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
+                className="flex items-center mb-4"
+              >
+                <img
+                  src="/logo.png"
+                  alt={BRAND_IDENTITY.name}
+                  className="h-12 w-auto object-contain drop-shadow-sm"
+                  loading="lazy"
+                />
+              </motion.div>
+              
               <p className="text-gray-700 dark:text-gray-300 text-lg font-medium mb-2">
                 {BRAND_IDENTITY.taglines.primary}
               </p>
