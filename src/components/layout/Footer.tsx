@@ -1,3 +1,4 @@
+// src/components/layout/Footer.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +19,7 @@ import {
   UserGroupIcon
 } from '@heroicons/react/24/outline';
 import { BrandLogo } from '../ui/BrandComponents';
-import { BRAND_COLORS, BRAND_GRADIENT, BRAND_VOICE } from '../../styles/design-system';
+import { GRADIENTS, BRAND_IDENTITY } from '../../styles/design-system';
 
 interface FooterLinkProps {
   href: string;
@@ -85,14 +86,14 @@ export const Footer: React.FC = () => {
             <div className="mb-6">
               <BrandLogo size="lg" className="mb-4" />
               <p className="text-gray-700 dark:text-gray-300 text-lg font-medium mb-2">
-                {t('brand.tagline')}
+                {BRAND_IDENTITY.taglines.primary}
               </p>
               <p className="text-gray-600 dark:text-gray-400 mb-4">
-                {t('brand.mission')}
+                {BRAND_IDENTITY.taglines.mission}
               </p>
               <div 
                 className="inline-flex items-center px-4 py-2 rounded-lg text-white font-medium text-sm shadow-md"
-                style={{ background: BRAND_GRADIENT }}
+                style={{ background: GRADIENTS.brand }}
               >
                 <HeartIcon className="w-4 h-4 mr-2" aria-hidden="true" />
                 {t('footer.madeWithLove')}
@@ -180,7 +181,7 @@ export const Footer: React.FC = () => {
                     hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2
                     transition-all duration-200
                   "
-                  style={{ background: BRAND_GRADIENT }}
+                  style={{ background: GRADIENTS.brand }}
                 >
                   Subscribe
                 </button>
@@ -244,7 +245,7 @@ export const Footer: React.FC = () => {
             <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
               <span>Made with</span>
               <HeartIcon className="w-4 h-4 text-red-500 animate-pulse" aria-hidden="true" />
-              <span>by MiniMax Agent</span>
+              <span>by Tek Pou Nou</span>
             </div>
           </div>
         </div>

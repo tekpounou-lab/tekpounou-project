@@ -1,73 +1,217 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Tek Pou Nou Design System - Tech built by Haitians, for Haiti */
 
 @layer base {
-  html {
-    font-family: 'Inter', system-ui, sans-serif;
+  :root {
+    /* TPN Brand Colors */
+    --background: 0 0% 100%;
+    --foreground: 210 100% 12%; /* #001F3F - TPN Navy */
+    
+    /* TPN Primary Identity */
+    --primary: 210 100% 12%; /* #001F3F - Dark Navy */
+    --primary-foreground: 0 0% 100%;
+    
+    /* TPN Accent Gradient Colors */
+    --accent-coral: 5 86% 70%; /* #FF6B6B */
+    --accent-purple: 316 36% 41%; /* #913D88 */
+    --accent-gradient-start: 5 86% 70%;
+    --accent-gradient-end: 316 36% 41%;
+    
+    /* TPN Semantic Colors */
+    --secondary: 210 17% 95%;
+    --secondary-foreground: 210 100% 12%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 210 100% 12%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 100% 12%;
+    
+    --muted: 210 17% 95%;
+    --muted-foreground: 215 16% 47%;
+    
+    --accent: 5 86% 70%;
+    --accent-foreground: 0 0% 100%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 210 20% 90%;
+    --input: 210 20% 90%;
+    --ring: 5 86% 70%;
+    
+    --radius: 0.75rem;
+    
+    /* Sidebar */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* TPN Custom Properties */
+    --gradient-hero: linear-gradient(135deg, hsl(var(--accent-gradient-start)), hsl(var(--accent-gradient-end)));
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 17% 98%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(210 17% 97%));
+    
+    --shadow-soft: 0 4px 20px -2px hsl(210 100% 12% / 0.1);
+    --shadow-medium: 0 8px 30px -4px hsl(210 100% 12% / 0.15);
+    --shadow-strong: 0 20px 40px -8px hsl(210 100% 12% / 0.25);
+    --shadow-glow: 0 0 40px hsl(var(--accent-coral) / 0.3);
+    
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .dark {
+    /* TPN Dark Mode */
+    --background: 222 84% 5%; /* #121212 */
+    --foreground: 0 0% 100%;
+    
+    --primary: 0 0% 100%;
+    --primary-foreground: 210 100% 12%;
+    
+    --secondary: 217 33% 18%;
+    --secondary-foreground: 0 0% 100%;
+    
+    --card: 222 84% 5%;
+    --card-foreground: 0 0% 100%;
+    
+    --popover: 222 84% 5%;
+    --popover-foreground: 0 0% 100%;
+    
+    --muted: 217 33% 18%;
+    --muted-foreground: 215 20% 65%;
+    
+    --accent: 5 86% 70%;
+    --accent-foreground: 0 0% 100%;
+    
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 217 33% 18%;
+    --input: 217 33% 18%;
+    --ring: 5 86% 70%;
+    
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    --gradient-hero: linear-gradient(135deg, hsl(var(--accent-gradient-start)), hsl(var(--accent-gradient-end)));
+    --gradient-subtle: linear-gradient(180deg, hsl(222 84% 5%), hsl(217 33% 8%));
+    --gradient-card: linear-gradient(145deg, hsl(222 84% 5%), hsl(217 33% 7%));
+    
+    --shadow-soft: 0 4px 20px -2px hsl(0 0% 0% / 0.3);
+    --shadow-medium: 0 8px 30px -4px hsl(0 0% 0% / 0.4);
+    --shadow-strong: 0 20px 40px -8px hsl(0 0% 0% / 0.6);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Roboto', system-ui, sans-serif;
   }
   
+  /* TPN Typography */
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Poppins', system-ui, sans-serif;
+    @apply font-bold tracking-tight;
+  }
+  
+  h1 {
+    @apply text-4xl lg:text-5xl;
+  }
+  
+  h2 {
+    @apply text-3xl lg:text-4xl;
+  }
+  
+  h3 {
+    @apply text-2xl lg:text-3xl;
   }
 }
 
 @layer components {
-  .btn {
-    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  /* TPN Custom Component Utilities */
+  .tpn-gradient {
+    background: var(--gradient-hero);
   }
   
-  .btn-primary {
-    @apply btn bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500;
+  .tpn-gradient-text {
+    background: var(--gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
   
-  .btn-secondary {
-    @apply btn bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600;
+  .tpn-card {
+    background: var(--gradient-card);
+    box-shadow: var(--shadow-soft);
+    @apply rounded-xl border border-border/50;
   }
   
-  .btn-danger {
-    @apply btn bg-danger-600 text-white hover:bg-danger-700 focus:ring-danger-500;
+  .tpn-hero-section {
+    background: var(--gradient-subtle);
+    position: relative;
+    overflow: hidden;
   }
   
-  .btn-success {
-    @apply btn bg-success-600 text-white hover:bg-success-700 focus:ring-success-500;
+  .tpn-hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 30% 20%, hsl(var(--accent-coral) / 0.1) 0%, transparent 50%);
+    pointer-events: none;
   }
   
-  .input {
-    @apply block w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400;
+  .tpn-animate-fade-in {
+    animation: fadeInUp 0.6s ease-out forwards;
   }
   
-  .card {
-    @apply bg-white rounded-lg shadow-md dark:bg-gray-800;
+  .tpn-animate-bounce {
+    animation: gentleBounce 2s ease-in-out infinite;
   }
   
-  .card-header {
-    @apply px-6 py-4 border-b border-gray-200 dark:border-gray-700;
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
   
-  .card-body {
-    @apply p-6;
+  @keyframes gentleBounce {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-5px);
+    }
+    60% {
+      transform: translateY(-3px);
+    }
   }
-  
-  .card-footer {
-    @apply px-6 py-4 border-t border-gray-200 dark:border-gray-700;
-  }
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-  
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-}
+} 

@@ -27,8 +27,8 @@ import { ThemeSwitcher } from '../ui/ThemeSwitcher';
 import { AccessibleTooltip } from '../ui/AccessibilityComponents';
 import { NotificationBell } from '../notifications/NotificationBell';
 import { useAuthStore } from '../../stores/authStore';
-// ✅ FIXED: Import GRADIENTS instead of BRAND_GRADIENT
-import { GRADIENTS } from '../../styles/design-system'; 
+import { GRADIENTS } from '../../styles/design-system';
+import type { UserRole } from '../../types'; // ✅ Import UserRole type
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
@@ -114,12 +114,11 @@ export const Navbar: React.FC = () => {
     setIsProfileMenuOpen(false);
   };
 
-  // ✅ FIXED: Handle roles as an array
+  // ✅ Type-safe role checking
   const getDashboardLink = () => {
     if (!user || !profile) return null;
     
-    // Helper to check if user has a role
-    const hasRole = (role: string) => 
+    const hasRole = (role: UserRole) => 
       Array.isArray(profile.roles) && profile.roles.includes(role);
     
     if (hasRole('super_admin')) {
@@ -135,7 +134,6 @@ export const Navbar: React.FC = () => {
       return { href: '/client', label: t('nav.dashboard'), icon: CogIcon };
     }
     
-    // Default: student or unrecognized role
     return { href: '/dashboard/student', label: t('nav.dashboard'), icon: UserIcon };
   };
 
@@ -170,7 +168,6 @@ export const Navbar: React.FC = () => {
                   : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
                 }
               `}
-              // ✅ FIXED: Use GRADIENTS.brand
               style={location.pathname === '/' ? { 
                 background: GRADIENTS.brand 
               } : {}}
@@ -195,7 +192,6 @@ export const Navbar: React.FC = () => {
                       : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
                     }
                   `}
-                  // ✅ FIXED: Use GRADIENTS.brand
                   style={item.current ? { 
                     background: GRADIENTS.brand 
                   } : {}}
@@ -223,7 +219,7 @@ export const Navbar: React.FC = () => {
             {/* User Authentication */}
             {user ? (
               <div className="relative">
-                <AccessibleTooltip content={profile?.display_name || user.email || t('nav.profile')}>
+                <AccessibleTooltip content={profile?.display_name || user.email?.split('@')[0] || t('nav.profile')}>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -275,9 +271,8 @@ export const Navbar: React.FC = () => {
                         </Link>
                       )}
                       
-                      {/* Super Admin Links */}
-                      {/* ✅ FIXED: Check roles array */}
-                      {Array.isArray(profile?.roles) && profile.roles.includes('super_admin') && (
+                      {/* Super Admin Links - ✅ Type-safe */}
+                      {profile?.roles?.includes('super_admin' as UserRole) && (
                         <Link
                           to="/admin/community"
                           className="
@@ -398,7 +393,6 @@ export const Navbar: React.FC = () => {
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                     }
                   `}
-                  // ✅ FIXED: Use GRADIENTS.brand
                   style={location.pathname === '/' ? { 
                     background: GRADIENTS.brand 
                   } : {}}
@@ -422,7 +416,6 @@ export const Navbar: React.FC = () => {
                           : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                         }
                       `}
-                      // ✅ FIXED: Use GRADIENTS.brand
                       style={item.current ? { 
                         background: GRADIENTS.brand 
                       } : {}}
