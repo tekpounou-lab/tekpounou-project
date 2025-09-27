@@ -8,7 +8,10 @@
     "login": "Konekte",
     "logout": "Dekonekte",
     "signup": "Enskri",
-    "dashboard": "Tablo Kòmand"
+    "dashboard": "Tablo Kòmand",
+    "learning": "Aprantisaj",
+    "community": "Kominote",
+    "business": "Biznis"
   },
   "common": {
     "home": "Lakay",

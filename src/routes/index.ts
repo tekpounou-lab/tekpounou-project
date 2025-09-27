@@ -12,9 +12,10 @@ export const ROUTES = {
   courses: "/courses",
   courseDetail: (id: string | number = ":id") => `/courses/${id}`,
 
-  // Blog
+  // Blog & News (same page, different URLs)
   blog: "/blog",
   blogPost: (id: string | number = ":id") => `/blog/${id}`,
+  news: "/news", // Alias for blog — will render BlogPage
 
   // Services
   services: "/services",
@@ -28,20 +29,20 @@ export const ROUTES = {
   events: "/events",
   eventDetail: (id: string | number = ":id") => `/events/${id}`,
 
-  // Networking (from your project structure: src/pages/networking/)
+  // Networking
   networking: "/networking",
 
-  // News (from your project structure: src/pages/news/)
-  news: "/news",
-
-  // Partners (from your project structure: src/pages/partners/)
+  // Partners
   partners: "/partners",
 
-  // Resources (from your project structure: src/pages/resources/)
+  // Resources
   resources: "/resources",
 
-  // Projects (from your project structure: src/pages/projects/)
+  // Projects
   projects: "/projects",
+
+  // Analytics
+  analytics: "/analytics",
 
   // Auth
   login: "/auth/login",
@@ -55,7 +56,7 @@ export const ROUTES = {
   // Dashboard (main entry — redirects to role-specific dashboards)
   dashboard: "/dashboard",
 
-  // Role-specific dashboards (optional but aligned with your structure)
+  // Role-specific dashboards
   dashboards: {
     student: "/dashboard/student",
     teacher: "/dashboard/teacher",
@@ -73,16 +74,52 @@ export const ROUTES = {
   // Admin area
   admin: {
     root: "/admin",
+    content: "/admin/content", // Added for super_admin link
     marketing: "/admin/marketing",
     landingPages: "/admin/landing-pages",
     landingPageNew: "/admin/landing-pages/new",
     landingPageDetail: (id: string | number = ":id") => `/admin/landing-pages/${id}`,
-    // You may add more admin sub-routes later (e.g., users, payments, etc.)
   },
 
-  // Teacher area (if used separately from dashboard)
+  // Teacher area
   teacher: "/teacher",
 
-  // Catch-all (for NotFoundPage)
+  // Catch-all (404)
   notFound: "*",
-};
+} as const;
+
+// ✅ Export individual paths for safer router registration
+export const PUBLIC_ROUTES = [
+  ROUTES.home,
+  ROUTES.about,
+  ROUTES.contact,
+  ROUTES.pricing,
+  ROUTES.community,
+  ROUTES.courses,
+  ROUTES.blog,
+  ROUTES.news,
+  ROUTES.services,
+  ROUTES.groups,
+  ROUTES.events,
+  ROUTES.networking,
+  ROUTES.partners,
+  ROUTES.resources,
+  ROUTES.projects,
+  ROUTES.analytics,
+  ROUTES.certificates,
+] as const;
+
+export const AUTH_ROUTES = [
+  ROUTES.login,
+  ROUTES.register,
+  ROUTES.resetPassword,
+] as const;
+
+export const DASHBOARD_ROUTES = [
+  ROUTES.dashboard,
+  ROUTES.dashboards.student,
+  ROUTES.dashboards.teacher,
+  ROUTES.dashboards.client,
+  ROUTES.dashboards.settings,
+  ROUTES.dashboards.notifications,
+] as const;

@@ -32,7 +32,7 @@ const ServicesPage: React.FC = () => {
             status,
             created_by,
             is_featured,
-            provider:users!services_created_by_fkey(profiles(display_name, avatar_url))
+            profiles!inner(display_name, avatar_url)
           `)
           .eq('status', 'active')
           .order('created_at', { ascending: false });
@@ -45,7 +45,7 @@ const ServicesPage: React.FC = () => {
           title: service.name,
           description: service.description,
           service_type: service.category,
-          provider: service.provider?.profiles?.display_name || 'Provider',
+          provider: service.profiles?.display_name || 'Provider',
           price: 0, // Price range string, not number
           pricing_model: 'fixed',
           location: 'Haiti',

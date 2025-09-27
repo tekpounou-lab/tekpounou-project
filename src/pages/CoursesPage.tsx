@@ -6,13 +6,14 @@ import { Card } from '@/components/ui/Card';
 import { useAuthStore } from '@/stores/authStore';
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
-import Layout from '@/components/layout/Layout'; // ✅ Use Layout
+import { Layout } from '@/components/layout/Layout'; // ✅ Use Layout
 
 interface Course {
   id: string;
   title: string;
   description: string;
   teacher_id: string;
+  instructor_name: string;
   duration_hours: number;
   enrollment_count: number;
   price: number;
@@ -21,12 +22,6 @@ interface Course {
   difficulty_level: string;
   thumbnail_url: string;
   is_free: boolean;
-  teacher?: {
-    profiles?: {
-      display_name: string;
-    };
-  };
-  instructor_name?: string;
 }
 
 const CoursesPage: React.FC = () => {
@@ -53,7 +48,7 @@ const CoursesPage: React.FC = () => {
             difficulty_level,
             thumbnail_url,
             is_free,
-            teacher:users!courses_teacher_id_fkey(profiles(display_name))
+            profiles!inner(display_name)
           `)
           .eq('status', 'published')
           .order('enrollment_count', { ascending: false });
@@ -62,7 +57,7 @@ const CoursesPage: React.FC = () => {
 
         const coursesWithInstructor = data.map(course => ({
           ...course,
-          instructor_name: course.teacher?.profiles?.display_name || 'Pwofesè anonim'
+          instructor_name: course.profiles?.[0]?.display_name || 'Pwofesè anonim'
         }));
 
         setCourses(coursesWithInstructor);

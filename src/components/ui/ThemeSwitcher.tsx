@@ -1,10 +1,88 @@
-import React from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { SunIcon, MoonIcon, ComputerDesktopIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '../providers/ThemeProvider';
 
 type Theme = 'light' | 'dark' | 'system';
+
+interface ThemeContextType {
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+  actualTheme: 'light' | 'dark';
+}
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  return context;
+};
+
+interface ThemeProviderProps {
+  children: React.ReactNode;
+}
+
+export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('tek-pou-nou-theme') as Theme) || 'system';
+    }
+    return 'system';
+  });
+
+  const [actualTheme, setActualTheme] = useState<'light' | 'dark'>('light');
+
+  const setTheme = (newTheme: Theme) => {
+    setThemeState(newTheme);
+    localStorage.setItem('tek-pou-nou-theme', newTheme);
+  };
+
+  useEffect(() => {
+    const root = document.documentElement;
+    
+    const getSystemTheme = (): 'light' | 'dark' => {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+
+    const applyTheme = (themeToApply: 'light' | 'dark') => {
+      setActualTheme(themeToApply);
+      if (themeToApply === 'dark') {
+        root.classList.add('dark');
+      } else {
+        root.classList.remove('dark');
+      }
+    };
+
+    if (theme === 'system') {
+      applyTheme(getSystemTheme());
+      
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleChange = (e: MediaQueryListEvent) => {
+        applyTheme(e.matches ? 'dark' : 'light');
+      };
+      
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    } else {
+      applyTheme(theme);
+    }
+  }, [theme]);
+
+  const value = {
+    theme,
+    setTheme,
+    actualTheme
+  };
+
+  return (
+    <ThemeContext.Provider value={value}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
 
 interface ThemeSwitcherProps {
   variant?: 'dropdown' | 'buttons' | 'toggle';

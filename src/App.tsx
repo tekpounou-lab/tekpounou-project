@@ -45,11 +45,24 @@ import ContactPage from "./pages/contact/ContactPage";
 import PricingPage from "./pages/pricing/PricingPage";
 import AuthPage from "./pages/AuthPage";
 import DashboardPage from "./pages/DashboardPage";
+import StudentDashboardPage from "./pages/dashboard/StudentDashboardPage";
+import TeacherDashboardPage from "./pages/dashboard/TeacherDashboardPage";
+import ClientDashboardPage from "./pages/dashboard/ClientDashboardPage";
+import DashboardSettingsPage from "./pages/dashboard/DashboardSettingsPage";
+import NotificationsPage from "./pages/dashboard/NotificationsPage";
 import LandingPage from "./pages/LandingPage";
 import NewsletterUnsubscribePage from "./pages/NewsletterUnsubscribePage";
 import CommunityPage from "./pages/CommunityPage";
 import CertificatesPage from "./pages/CertificatesPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import GroupsPage from "./pages/GroupsPage";
+import GroupDetailPage from "./pages/group/GroupDetailPage";
+import EventsPage from "./pages/EventsPage";
+import EventDetailPage from "./pages/events/EventDetailPage";
+import NetworkingPage from "./pages/NetworkingPage";
+import PartnersPage from "./pages/PartnersPage";
+import ResourcesPage from "./pages/ResourcesPage";
+import ProjectsPage from "./pages/ProjectsPage";
 
 // Admin Components
 import AdminLayout from "./components/admin/AdminLayout";
@@ -74,13 +87,11 @@ function AnalyticsInit() {
   const location = useLocation();
   const { trackPageView } = useAnalytics();
 
-  // Initialize GA + Supabase
   useEffect(() => {
     const gaTrackingId = import.meta.env.VITE_GA_TRACKING_ID;
     analytics.init(supabase, gaTrackingId);
   }, [supabase]);
 
-  // Track page view on route change
   useEffect(() => {
     trackPageView({
       page_title: document.title,
@@ -100,7 +111,11 @@ function SEOManager() {
     if (pathname === ROUTES.home) return defaultSEOConfigs.home;
     if (pathname.startsWith(ROUTES.courses))
       return defaultSEOConfigs.courses;
-    if (pathname.startsWith(ROUTES.blog)) return defaultSEOConfigs.blog;
+    if (
+      pathname.startsWith(ROUTES.blog) ||
+      pathname === ROUTES.news
+    )
+      return defaultSEOConfigs.blog;
     if (pathname.startsWith(ROUTES.services))
       return defaultSEOConfigs.services;
     if (pathname === ROUTES.about) return defaultSEOConfigs.about;
@@ -141,6 +156,7 @@ function App() {
                     path={ROUTES.blogPost()}
                     element={<BlogPostPage />}
                   />
+                  <Route path={ROUTES.news} element={<BlogPage />} />
                   <Route path={ROUTES.services} element={<ServicesPage />} />
                   <Route
                     path={ROUTES.serviceDetail()}
@@ -152,7 +168,17 @@ function App() {
                   <Route path={ROUTES.community} element={<CommunityPage />} />
                   <Route path={ROUTES.certificates} element={<CertificatesPage />} />
 
-                  {/* Auth Routes (all nested in AuthPage) */}
+                  {/* Extra Public Pages */}
+                  <Route path={ROUTES.groups} element={<GroupsPage />} />
+                  <Route path={ROUTES.groupDetail()} element={<GroupDetailPage />} />
+                  <Route path={ROUTES.events} element={<EventsPage />} />
+                  <Route path={ROUTES.eventDetail()} element={<EventDetailPage />} />
+                  <Route path={ROUTES.networking} element={<NetworkingPage />} />
+                  <Route path={ROUTES.partners} element={<PartnersPage />} />
+                  <Route path={ROUTES.resources} element={<ResourcesPage />} />
+                  <Route path={ROUTES.projects} element={<ProjectsPage />} />
+
+                  {/* Auth Routes */}
                   <Route path="/auth/*" element={<AuthPage />} />
 
                   {/* Landing Pages */}
@@ -168,23 +194,37 @@ function App() {
                   />
 
                   {/* User Dashboard */}
+                  <Route path={ROUTES.dashboard} element={<DashboardPage />} />
                   <Route
-                    path={ROUTES.dashboard}
-                    element={<DashboardPage />}
+                    path={ROUTES.dashboards.student}
+                    element={<StudentDashboardPage />}
+                  />
+                  <Route
+                    path={ROUTES.dashboards.teacher}
+                    element={<TeacherDashboardPage />}
+                  />
+                  <Route
+                    path={ROUTES.dashboards.client}
+                    element={<ClientDashboardPage />}
+                  />
+                  <Route
+                    path={ROUTES.dashboards.settings}
+                    element={<DashboardSettingsPage />}
+                  />
+                  <Route
+                    path={ROUTES.dashboards.notifications}
+                    element={<NotificationsPage />}
                   />
 
+                  {/* Optional Teacher Area */}
+                  <Route path={ROUTES.teacher} element={<TeacherDashboardPage />} />
+
                   {/* Admin Routes */}
-                  <Route
-                    path={ROUTES.admin.root}
-                    element={<AdminLayout />}
-                  >
+                  <Route path={ROUTES.admin.root} element={<AdminLayout />}>
                     <Route
                       index
                       element={
-                        <Navigate
-                          to={ROUTES.admin.marketing}
-                          replace
-                        />
+                        <Navigate to={ROUTES.admin.marketing} replace />
                       }
                     />
                     <Route
@@ -206,10 +246,7 @@ function App() {
                   </Route>
 
                   {/* 404 */}
-                  <Route
-                    path={ROUTES.notFound}
-                    element={<NotFoundPage />}
-                  />
+                  <Route path={ROUTES.notFound} element={<NotFoundPage />} />
                 </Routes>
 
                 {/* Global Components */}
@@ -219,9 +256,7 @@ function App() {
             </Router>
 
             {/* Dev Tools */}
-            {import.meta.env.DEV && (
-              <ReactQueryDevtools initialIsOpen={false} />
-            )}
+            {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
           </AuthProvider>
         </SupabaseProvider>
       </QueryClientProvider>
