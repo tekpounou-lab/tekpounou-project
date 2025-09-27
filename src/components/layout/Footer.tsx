@@ -18,7 +18,7 @@ import {
   FolderOpenIcon,
   UserGroupIcon
 } from '@heroicons/react/24/outline';
-import { GRADIENTS, BRAND_IDENTITY } from '../../styles/design-system';
+import { BRAND_IDENTITY } from '../../styles/design-system';
 
 interface FooterLinkProps {
   href: string;
@@ -33,14 +33,14 @@ const FooterLink: React.FC<FooterLinkProps> = ({ href, children, external = fals
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-gray-600 dark:text-gray-400 hover:text-pink-600 dark:hover:text-pink-400 transition-colors duration-200"
+        className="text-muted-foreground hover:text-accent transition-colors duration-200"
       >
         {children}
       </a>
     ) : (
       <Link
         to={href}
-        className="text-gray-600 dark:text-gray-400 hover:text-pink-600 dark:hover:text-pink-400 transition-colors duration-200"
+        className="text-muted-foreground hover:text-accent transition-colors duration-200"
       >
         {children}
       </Link>
@@ -76,14 +76,13 @@ export const Footer: React.FC = () => {
   ];
 
   return (
-    <footer className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 border-t border-gray-200 dark:border-gray-700">
+    <footer className="bg-background border-t border-border">
       <div className="container mx-auto px-4 lg:px-6 py-12">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <div className="mb-6">
-              {/* ✅ Updated: Direct logo from /public/logo.png with animation */}
               <motion.div
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
@@ -92,21 +91,18 @@ export const Footer: React.FC = () => {
                 <img
                   src="/logo.png"
                   alt={BRAND_IDENTITY.name}
-                  className="h-12 w-auto object-contain drop-shadow-sm"
+                  className="h-12 w-auto object-contain"
                   loading="lazy"
                 />
               </motion.div>
               
-              <p className="text-gray-700 dark:text-gray-300 text-lg font-medium mb-2">
+              <p className="text-lg font-medium text-foreground mb-2">
                 {BRAND_IDENTITY.taglines.primary}
               </p>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
+              <p className="text-muted-foreground mb-4">
                 {BRAND_IDENTITY.taglines.mission}
               </p>
-              <div 
-                className="inline-flex items-center px-4 py-2 rounded-lg text-white font-medium text-sm shadow-md"
-                style={{ background: GRADIENTS.brand }}
-              >
+              <div className="inline-flex items-center px-4 py-2 rounded-lg text-primary-foreground font-medium text-sm shadow-md tpn-gradient">
                 <HeartIcon className="w-4 h-4 mr-2" aria-hidden="true" />
                 {t('footer.madeWithLove')}
               </div>
@@ -114,18 +110,18 @@ export const Footer: React.FC = () => {
             
             {/* Contact Info */}
             <div className="space-y-3">
-              <div className="flex items-center text-gray-600 dark:text-gray-400">
-                <EnvelopeIcon className="w-5 h-5 mr-3 text-pink-500" aria-hidden="true" />
-                <a href="mailto:info@tekpounou.org" className="hover:text-pink-600 dark:hover:text-pink-400 transition-colors duration-200">
+              <div className="flex items-center text-muted-foreground">
+                <EnvelopeIcon className="w-5 h-5 mr-3 text-accent" aria-hidden="true" />
+                <a href="mailto:info@tekpounou.org" className="hover:text-accent transition-colors duration-200">
                   info@tekpounou.org
                 </a>
               </div>
-              <div className="flex items-center text-gray-600 dark:text-gray-400">
-                <PhoneIcon className="w-5 h-5 mr-3 text-pink-500" aria-hidden="true" />
+              <div className="flex items-center text-muted-foreground">
+                <PhoneIcon className="w-5 h-5 mr-3 text-accent" aria-hidden="true" />
                 <span>+509 1234-5678</span>
               </div>
-              <div className="flex items-start text-gray-600 dark:text-gray-400">
-                <MapPinIcon className="w-5 h-5 mr-3 text-pink-500 flex-shrink-0 mt-1" aria-hidden="true" />
+              <div className="flex items-start text-muted-foreground">
+                <MapPinIcon className="w-5 h-5 mr-3 text-accent flex-shrink-0 mt-1" aria-hidden="true" />
                 <span>
                   Port-au-Prince, Haiti<br />
                   & Global Diaspora
@@ -136,7 +132,7 @@ export const Footer: React.FC = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-gray-900 dark:text-white font-semibold text-lg mb-4">
+            <h3 className="text-foreground font-semibold text-lg mb-4">
               Platform
             </h3>
             <nav className="space-y-3" aria-label="Footer navigation">
@@ -156,7 +152,7 @@ export const Footer: React.FC = () => {
 
           {/* Company & Legal */}
           <div>
-            <h3 className="text-gray-900 dark:text-white font-semibold text-lg mb-4">
+            <h3 className="text-foreground font-semibold text-lg mb-4">
               {t('footer.aboutUs')}
             </h3>
             <nav className="space-y-3" aria-label="Legal navigation">
@@ -169,10 +165,10 @@ export const Footer: React.FC = () => {
             
             {/* Newsletter Signup */}
             <div className="mt-6">
-              <h4 className="text-gray-900 dark:text-white font-medium mb-2">
+              <h4 className="text-foreground font-medium mb-2">
                 {t('footer.newsletter')}
               </h4>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+              <p className="text-sm text-muted-foreground mb-3">
                 {t('footer.subscribeNewsletter')}
               </p>
               <form className="flex">
@@ -180,20 +176,15 @@ export const Footer: React.FC = () => {
                   type="email"
                   placeholder="your@email.com"
                   className="
-                    flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600
-                    rounded-l-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                    focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500
+                    flex-1 px-3 py-2 text-sm border border-border
+                    rounded-l-md bg-background text-foreground
+                    focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent
                   "
                   aria-label={t('footer.subscribeNewsletter')}
                 />
                 <button
                   type="submit"
-                  className="
-                    px-4 py-2 text-sm font-medium text-white rounded-r-md
-                    hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2
-                    transition-all duration-200
-                  "
-                  style={{ background: GRADIENTS.brand }}
+                  className="px-4 py-2 text-sm font-medium text-primary-foreground rounded-r-md tpn-gradient hover:shadow-lg transition-all duration-200"
                 >
                   Subscribe
                 </button>
@@ -203,10 +194,10 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Social Links */}
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-8 mb-8">
+        <div className="border-t border-border/50 pt-8 mb-8">
           <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
             <div>
-              <h3 className="text-gray-900 dark:text-white font-semibold text-lg mb-3">
+              <h3 className="text-foreground font-semibold text-lg mb-3">
                 {t('footer.followUs')}
               </h3>
               <div className="flex space-x-4">
@@ -219,10 +210,10 @@ export const Footer: React.FC = () => {
                     whileHover={{ scale: 1.1, y: -2 }}
                     whileTap={{ scale: 0.95 }}
                     className="
-                      flex items-center justify-center w-10 h-10 bg-white dark:bg-gray-800
-                      border border-gray-300 dark:border-gray-600 rounded-lg
-                      hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:border-pink-300 dark:hover:border-pink-600
-                      transition-all duration-200 shadow-sm hover:shadow-md
+                      flex items-center justify-center w-10 h-10 bg-card
+                      border border-border rounded-lg
+                      hover:bg-accent/10 hover:border-accent
+                      transition-all duration-200 shadow-sm
                     "
                     aria-label={`Follow us on ${social.name}`}
                     title={social.name}
@@ -237,11 +228,11 @@ export const Footer: React.FC = () => {
             <div className="text-center sm:text-right">
               <div className="flex items-center justify-center sm:justify-end mb-2">
                 <span className="text-2xl mr-2" aria-hidden="true">🇭🇹</span>
-                <span className="text-gray-700 dark:text-gray-300 font-medium">
+                <span className="text-muted-foreground font-medium">
                   {t('footer.forHaiti')}
                 </span>
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 Building bridges between Haiti and the world
               </p>
             </div>
@@ -249,14 +240,14 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Copyright */}
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-8">
+        <div className="border-t border-border/50 pt-8">
           <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-muted-foreground">
               © {currentYear} Tek Pou Nou. {t('footer.allRightsReserved')}.
             </p>
-            <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
               <span>Made with</span>
-              <HeartIcon className="w-4 h-4 text-red-500 animate-pulse" aria-hidden="true" />
+              <HeartIcon className="w-4 h-4 text-destructive animate-pulse" aria-hidden="true" />
               <span>by Tek Pou Nou</span>
             </div>
           </div>

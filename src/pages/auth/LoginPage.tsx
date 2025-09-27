@@ -1,14 +1,16 @@
+// src/pages/auth/LoginPage.tsx
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
-import { Eye, EyeOff, LogIn } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff, LogIn, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Card, CardBody, CardHeader } from "@/components/ui/Card";
+import { Card } from "@/components/ui/Card";
 import { useAuthStore } from "@/stores/authStore";
 import { LoginForm } from "@/types";
 import { isValidEmail } from "@/utils";
 import { ROUTES } from "@/routes";
+import { motion } from "framer-motion";
 
 export interface LoginPageProps {
   onSuccess?: () => void;
@@ -18,6 +20,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const { signIn, isLoading } = useAuthStore();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -34,41 +37,75 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
       setError(result.error);
     } else {
       onSuccess?.();
+      navigate(ROUTES.dashboard);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <h2 className="mt-6 text-3xl font-bold text-gray-900 dark:text-gray-100">
-            Konekte nan kont ou an
-          </h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Sign in to your account
+    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-20 -left-20 w-80 h-80 rounded-full bg-accent/5 blur-3xl animate-pulse-slow"></div>
+        <div className="absolute -bottom-20 -right-20 w-96 h-96 rounded-full bg-primary/5 blur-3xl animate-float"></div>
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="max-w-md w-full"
+      >
+        {/* Logo & Branding */}
+        <div className="text-center mb-8">
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-primary mb-4 shadow-lg"
+          >
+            <img
+              src="/logo.png"
+              alt="Tek Pou Nou"
+              className="h-10 w-10 object-contain"
+            />
+          </motion.div>
+          <h1 className="text-3xl font-bold text-primary mb-2">
+            Tek Pou Nou
+          </h1>
+          <p className="text-muted-foreground">
+            Technology for Us / Teknoloji pou Nou
           </p>
         </div>
 
-        {/* Card */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-center">
-              <LogIn className="h-8 w-8 text-primary-600" />
+        {/* Login Card */}
+        <Card className="tpn-card p-6 sm:p-8">
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-accent/10 text-accent mb-3">
+              <LogIn className="h-6 w-6" />
             </div>
-          </CardHeader>
-          <CardBody>
-            {/* Error Message */}
-            {error && (
-              <div className="mb-4 p-3 rounded-md bg-danger-50 border border-danger-200 dark:bg-danger-900/20 dark:border-danger-800">
-                <p className="text-sm text-danger-700 dark:text-danger-400">
-                  {error}
-                </p>
-              </div>
-            )}
+            <h2 className="text-2xl font-bold text-foreground">
+              Konekte nan kont ou an
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Sign in to your account
+            </p>
+          </div>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Error Message */}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="mb-5 p-3 rounded-lg bg-destructive/10 border border-destructive/20"
+            >
+              <p className="text-sm text-destructive-foreground">
+                {error}
+              </p>
+            </motion.div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <div>
               <Input
                 label="Email"
                 type="email"
@@ -79,60 +116,80 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
                   validate: (value) =>
                     isValidEmail(value) || "Please enter a valid email address",
                 })}
+                className="bg-background border-border"
               />
+            </div>
 
-              <div className="relative">
-                <Input
-                  label="Password / Mo de pase"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
-                  error={errors.password?.message}
-                  {...register("password", {
-                    required: "Password is required",
-                    minLength: {
-                      value: 6,
-                      message: "Password must be at least 6 characters",
-                    },
-                  })}
-                />
-                <button
-                  type="button"
-                  className="absolute right-3 top-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full"
-                isLoading={isLoading}
-                disabled={isLoading}
+            <div className="relative">
+              <Input
+                label="Password / Mo de pase"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                error={errors.password?.message}
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  },
+                })}
+                className="bg-background border-border pr-12"
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-10 text-muted-foreground hover:text-foreground"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
-                Konekte / Sign In
-              </Button>
-            </form>
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
 
-            {/* Redirect to Register */}
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+            <Button
+              type="submit"
+              className="w-full tpn-gradient text-primary-foreground hover:shadow-lg"
+              isLoading={isLoading}
+              disabled={isLoading}
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              Konekte / Sign In
+            </Button>
+          </form>
+
+          {/* Footer Links */}
+          <div className="mt-6 pt-6 border-t border-border/30">
+            <div className="text-center space-y-3">
+              <p className="text-sm text-muted-foreground">
                 Pa gen kont? /{" "}
                 <Link
                   to={ROUTES.register}
-                  className="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400"
+                  className="font-medium text-accent hover:text-accent/80 transition-colors"
                 >
                   Kreye yon kont / Create account
                 </Link>
               </p>
+              <Link
+                to={ROUTES.home}
+                className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <span>← Retounen ak paj dakèy</span>
+              </Link>
             </div>
-          </CardBody>
+          </div>
         </Card>
-      </div>
+
+        {/* Haiti Pride */}
+        <div className="mt-8 text-center">
+          <div className="flex items-center justify-center space-x-2 text-muted-foreground">
+            <span className="text-xl">🇭🇹</span>
+            <span className="text-sm">Teknoloji pou kominote Ayisyen an</span>
+          </div>
+        </div>
+      </motion.div>
     </div>
   );
 };

@@ -1,149 +1,268 @@
-import React from 'react';
+// src/pages/CoursesPage.tsx
+import React, { useEffect, useState } from 'react';
 import { BookOpen, Clock, Users, Star } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { Card, CardBody } from '@/components/ui/Card';
+import { Card } from '@/components/ui/Card';
+import { useAuthStore } from '@/stores/authStore';
+import { supabase } from '@/lib/supabase';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Layout } from '@/components/layout/Layout'; // ✅ Use Layout
+
+interface Course {
+  id: string;
+  title: string;
+  description: string;
+  teacher_id: string;
+  instructor_name: string;
+  duration_hours: number;
+  enrollment_count: number;
+  price: number;
+  currency: string;
+  language: string;
+  difficulty_level: string;
+  thumbnail_url: string;
+  is_free: boolean;
+}
 
 const CoursesPage: React.FC = () => {
-  // Placeholder course data
-  const courses = [
-    {
-      id: '1',
-      title: 'Kreyòl Ayisyen: Komisman',
-      description: 'Aprann pale ak ekri nan lang kreyòl ayisyen yo nan yon fason ki bon.',
-      instructor: 'Prof. Marie Dubois',
-      duration: '10 hours',
-      students: 245,
-      rating: 4.8,
-      price: 'Free',
-      thumbnail: '/api/placeholder/300/200',
-      level: 'Beginner',
-    },
-    {
-      id: '2',
-      title: 'Introduction to Haitian History',
-      description: 'Learn about the rich history of Haiti from pre-Columbian times to modern day.',
-      instructor: 'Dr. Jean Baptiste',
-      duration: '15 hours',
-      students: 189,
-      rating: 4.7,
-      price: '$29.99',
-      thumbnail: '/api/placeholder/300/200',
-      level: 'Intermediate',
-    },
-    {
-      id: '3',
-      title: 'Ti Biznis yo / Small Business Basics',
-      description: 'Aprann kijan pou w kòmanse ak jere yon ti biznis nan Ayiti.',
-      instructor: 'Entrepreneur James Louis',
-      duration: '12 hours',
-      students: 156,
-      rating: 4.9,
-      price: '$19.99',
-      thumbnail: '/api/placeholder/300/200',
-      level: 'Beginner',
-    },
-  ];
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { session } = useAuthStore();
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('courses')
+          .select(`
+            id,
+            title,
+            description,
+            teacher_id,
+            duration_hours,
+            enrollment_count,
+            price,
+            currency,
+            language,
+            difficulty_level,
+            thumbnail_url,
+            is_free,
+            profiles!inner(display_name)
+          `)
+          .eq('status', 'published')
+          .order('enrollment_count', { ascending: false });
+
+        if (error) throw error;
+
+        const coursesWithInstructor = data.map(course => ({
+          ...course,
+          instructor_name: course.profiles?.[0]?.display_name || 'Pwofesè anonim'
+        }));
+
+        setCourses(coursesWithInstructor);
+      } catch (err) {
+        console.error('Error fetching courses:', err);
+        setError('Pa kapab chaje kou yo. Tanpri eseye ankò.')
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  const getDifficultyBadge = (level: string) => {
+    const classes = {
+      beginner: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200',
+      intermediate: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200',
+      advanced: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-200'
+    };
+    return classes[level as keyof typeof classes] || classes.beginner;
+  };
+
+  const formatPrice = (course: Course) => {
+    if (course.is_free) return 'Gratis';
+    return `${course.price} ${course.currency}`;
+  };
+
+  const getLanguageFlag = (lang: string) => {
+    switch (lang) {
+      case 'ht-HT': return '🇭🇹';
+      case 'fr-FR': return '🇫🇷';
+      case 'en-US': return '🇺🇸';
+      default: return '🌐';
+    }
+  };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-          Kou yo / Courses
-        </h1>
-        <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-          Dekouvri kou yo ki ka ede ou aprann ak devlope nan domèn diferan yo.
-          Discover courses that help you learn and grow in various fields.
-        </p>
-      </div>
+    <Layout>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-12"
+        >
+          <h1 className="text-4xl font-bold text-foreground mb-4 tpn-gradient-text">
+            Kou yo / Courses
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Dekouvri kou yo ki ka ede ou aprann ak devlope nan domèn diferan yo.
+            <br className="hidden sm:block" />
+            Discover courses that help you learn and grow in various fields.
+          </p>
+        </motion.div>
 
-      {/* Filters */}
-      <div className="mb-8">
-        <div className="flex flex-wrap gap-4 justify-center">
-          <Button variant="outline" size="sm">
-            Tout bagay / All
-          </Button>
-          <Button variant="outline" size="sm">
-            Lang / Language
-          </Button>
-          <Button variant="outline" size="sm">
-            Biznis / Business
-          </Button>
-          <Button variant="outline" size="sm">
-            Teknoloji / Technology
-          </Button>
-          <Button variant="outline" size="sm">
-            Kilti / Culture
-          </Button>
-        </div>
-      </div>
+        {/* Filters */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-8"
+        >
+          <div className="flex flex-wrap gap-3 justify-center">
+            {['Tout bagay / All', 'Lang / Language', 'Biznis / Business', 'Teknoloji / Technology', 'Kilti / Culture'].map((filter) => (
+              <Button key={filter} variant="outline" size="sm" className="border-border hover:bg-muted/30">
+                {filter}
+              </Button>
+            ))}
+          </div>
+        </motion.div>
 
-      {/* Course Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {courses.map((course) => (
-          <Card key={course.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-            <div className="aspect-video bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-              <BookOpen className="h-12 w-12 text-gray-400" />
-            </div>
-            <CardBody>
-              <div className="mb-2">
-                <span className="inline-block px-2 py-1 text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200 rounded">
-                  {course.level}
-                </span>
-              </div>
-              
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                {course.title}
-              </h3>
-              
-              <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
-                {course.description}
-              </p>
-              
-              <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                <p>Pwofesè / Instructor: {course.instructor}</p>
-              </div>
-              
-              <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center">
-                    <Clock className="h-4 w-4 mr-1" />
-                    {course.duration}
-                  </div>
-                  <div className="flex items-center">
-                    <Users className="h-4 w-4 mr-1" />
-                    {course.students}
-                  </div>
+        {/* Loading State */}
+        {loading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="tpn-card animate-pulse">
+                <div className="aspect-video bg-muted rounded-t-xl"></div>
+                <div className="p-6">
+                  <div className="h-4 bg-muted rounded w-1/3 mb-3"></div>
+                  <div className="h-3 bg-muted rounded w-full mb-2"></div>
+                  <div className="h-3 bg-muted rounded w-2/3 mb-4"></div>
+                  <div className="h-8 bg-muted rounded w-1/4"></div>
                 </div>
-                <div className="flex items-center">
-                  <Star className="h-4 w-4 mr-1 text-yellow-400" />
-                  {course.rating}
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <span className="text-lg font-bold text-primary-600 dark:text-primary-400">
-                  {course.price}
-                </span>
-                <Button size="sm">
-                  Enskri / Enroll
-                </Button>
-              </div>
-            </CardBody>
-          </Card>
-        ))}
-      </div>
+              </Card>
+            ))}
+          </div>
+        )}
 
-      {/* Call to Action */}
-      <div className="text-center mt-12">
-        <p className="text-gray-600 dark:text-gray-400 mb-4">
-          Pa jwenn kou ou vle a? / Don't see the course you want?
-        </p>
-        <Button variant="outline">
-          Mande yon kou / Request a Course
-        </Button>
+        {/* Error State */}
+        {error && !loading && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12"
+          >
+            <p className="text-destructive mb-4">{error}</p>
+            <Button onClick={() => window.location.reload()}>
+              Eseye Ankò / Try Again
+            </Button>
+          </motion.div>
+        )}
+
+        {/* Course Grid */}
+        {!loading && !error && (
+          <AnimatePresence>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              {courses.map((course) => (
+                <motion.div
+                  key={course.id}
+                  layout
+                  whileHover={{ y: -5 }}
+                  className="h-full"
+                >
+                  <Card className="tpn-card overflow-hidden h-full flex flex-col hover:shadow-xl transition-all duration-300">
+                    <div className="aspect-video overflow-hidden">
+                      {course.thumbnail_url ? (
+                        <img
+                          src={course.thumbnail_url}
+                          alt={course.title}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
+                          <BookOpen className="h-12 w-12 text-muted-foreground/50" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-6 flex flex-col flex-1">
+                      <div className="mb-3 flex justify-between items-start">
+                        <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${getDifficultyBadge(course.difficulty_level)}`}>
+                          {course.difficulty_level === 'beginner' ? 'Kòmansè' : 
+                           course.difficulty_level === 'intermediate' ? 'Entèmedyè' : 'Avanse'}
+                        </span>
+                        <span className="text-lg" aria-hidden="true">
+                          {getLanguageFlag(course.language)}
+                        </span>
+                      </div>
+                      
+                      <h3 className="text-lg font-semibold text-foreground mb-2 line-clamp-2">
+                        {course.title}
+                      </h3>
+                      
+                      <p className="text-muted-foreground text-sm mb-4 line-clamp-2 flex-1">
+                        {course.description}
+                      </p>
+                      
+                      <div className="text-sm text-muted-foreground mb-4">
+                        <p>Pwofesè / Instructor: {course.instructor_name}</p>
+                      </div>
+                      
+                      <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                        <div className="flex items-center space-x-4">
+                          <div className="flex items-center">
+                            <Clock className="h-4 w-4 mr-1" />
+                            {course.duration_hours} èdtan
+                          </div>
+                          <div className="flex items-center">
+                            <Users className="h-4 w-4 mr-1" />
+                            {course.enrollment_count}
+                          </div>
+                        </div>
+                        <div className="flex items-center">
+                          <Star className="h-4 w-4 mr-1 text-yellow-500 fill-current" />
+                          4.8
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between mt-auto pt-4 border-t border-border/30">
+                        <span className="text-lg font-bold text-accent">
+                          {formatPrice(course)}
+                        </span>
+                        <Button size="sm" className="tpn-gradient text-primary-foreground">
+                          Enskri
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                </motion.div>
+              ))}
+            </motion.div>
+          </AnimatePresence>
+        )}
+
+        {/* Call to Action */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="text-center mt-12"
+        >
+          <p className="text-muted-foreground mb-4">
+            Pa jwenn kou ou vle a? / Don't see the course you want?
+          </p>
+          <Button variant="outline" className="border-border hover:bg-muted/30">
+            Mande yon kou / Request a Course
+          </Button>
+        </motion.div>
       </div>
-    </div>
+    </Layout>
   );
 };
 
