@@ -12,17 +12,11 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "./components/ui/Toaster";
 
 // Providers
-import {
-  SupabaseProvider,
-  useSupabaseClient,
-} from "./components/providers/SupabaseProvider";
+import { useSupabaseClient } from "./components/providers/SupabaseProvider";
 import { AuthProvider } from "./components/providers/AuthProvider";
 
 // Components
-import {
-  SEOHead,
-  defaultSEOConfigs,
-} from "./components/common/SEOHead";
+import { SEOHead, defaultSEOConfigs } from "./components/common/SEOHead";
 import { FloatingNewsletterPopup } from "./components/marketing/NewsletterSignup";
 import { useReferralTracking } from "./components/marketing/ReferralSystem";
 
@@ -109,15 +103,10 @@ function SEOManager() {
 
   const getSEOForRoute = (pathname: string) => {
     if (pathname === ROUTES.home) return defaultSEOConfigs.home;
-    if (pathname.startsWith(ROUTES.courses))
-      return defaultSEOConfigs.courses;
-    if (
-      pathname.startsWith(ROUTES.blog) ||
-      pathname === ROUTES.news
-    )
+    if (pathname.startsWith(ROUTES.courses)) return defaultSEOConfigs.courses;
+    if (pathname.startsWith(ROUTES.blog) || pathname === ROUTES.news)
       return defaultSEOConfigs.blog;
-    if (pathname.startsWith(ROUTES.services))
-      return defaultSEOConfigs.services;
+    if (pathname.startsWith(ROUTES.services)) return defaultSEOConfigs.services;
     if (pathname === ROUTES.about) return defaultSEOConfigs.about;
     return null;
   };
@@ -134,131 +123,122 @@ function App() {
   return (
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
-        <SupabaseProvider>
-          <AuthProvider>
-            <Router>
-              <div className="min-h-screen bg-gray-50">
-                {/* SEO + Analytics */}
-                <SEOManager />
-                <AnalyticsInit />
+        {/* 👇 Removed SupabaseProvider (already in main.tsx) */}
+        <AuthProvider>
+          <Router>
+            <div className="min-h-screen bg-gray-50">
+              {/* SEO + Analytics */}
+              <SEOManager />
+              <AnalyticsInit />
 
-                {/* Routes */}
-                <Routes>
-                  {/* Public Routes */}
-                  <Route path={ROUTES.home} element={<HomePage />} />
-                  <Route path={ROUTES.courses} element={<CoursesPage />} />
+              {/* Routes */}
+              <Routes>
+                {/* Public Routes */}
+                <Route path={ROUTES.home} element={<HomePage />} />
+                <Route path={ROUTES.courses} element={<CoursesPage />} />
+                <Route
+                  path={ROUTES.courseDetail()}
+                  element={<CourseDetailPage />}
+                />
+                <Route path={ROUTES.blog} element={<BlogPage />} />
+                <Route path={ROUTES.blogPost()} element={<BlogPostPage />} />
+                <Route path={ROUTES.news} element={<BlogPage />} />
+                <Route path={ROUTES.services} element={<ServicesPage />} />
+                <Route
+                  path={ROUTES.serviceDetail()}
+                  element={<ServiceDetailPage />}
+                />
+                <Route path={ROUTES.about} element={<AboutPage />} />
+                <Route path={ROUTES.contact} element={<ContactPage />} />
+                <Route path={ROUTES.pricing} element={<PricingPage />} />
+                <Route path={ROUTES.community} element={<CommunityPage />} />
+                <Route path={ROUTES.certificates} element={<CertificatesPage />} />
+
+                {/* Extra Public Pages */}
+                <Route path={ROUTES.groups} element={<GroupsPage />} />
+                <Route path={ROUTES.groupDetail()} element={<GroupDetailPage />} />
+                <Route path={ROUTES.events} element={<EventsPage />} />
+                <Route path={ROUTES.eventDetail()} element={<EventDetailPage />} />
+                <Route path={ROUTES.networking} element={<NetworkingPage />} />
+                <Route path={ROUTES.partners} element={<PartnersPage />} />
+                <Route path={ROUTES.resources} element={<ResourcesPage />} />
+                <Route path={ROUTES.projects} element={<ProjectsPage />} />
+
+                {/* Auth Routes */}
+                <Route path="/auth/*" element={<AuthPage />} />
+
+                {/* Landing Pages */}
+                <Route path={ROUTES.landingPage()} element={<LandingPage />} />
+
+                {/* Newsletter */}
+                <Route
+                  path={ROUTES.newsletterUnsubscribe}
+                  element={<NewsletterUnsubscribePage />}
+                />
+
+                {/* User Dashboard */}
+                <Route path={ROUTES.dashboard} element={<DashboardPage />} />
+                <Route
+                  path={ROUTES.dashboards.student}
+                  element={<StudentDashboardPage />}
+                />
+                <Route
+                  path={ROUTES.dashboards.teacher}
+                  element={<TeacherDashboardPage />}
+                />
+                <Route
+                  path={ROUTES.dashboards.client}
+                  element={<ClientDashboardPage />}
+                />
+                <Route
+                  path={ROUTES.dashboards.settings}
+                  element={<DashboardSettingsPage />}
+                />
+                <Route
+                  path={ROUTES.dashboards.notifications}
+                  element={<NotificationsPage />}
+                />
+
+                {/* Optional Teacher Area */}
+                <Route path={ROUTES.teacher} element={<TeacherDashboardPage />} />
+
+                {/* Admin Routes */}
+                <Route path={ROUTES.admin.root} element={<AdminLayout />}>
                   <Route
-                    path={ROUTES.courseDetail()}
-                    element={<CourseDetailPage />}
-                  />
-                  <Route path={ROUTES.blog} element={<BlogPage />} />
-                  <Route
-                    path={ROUTES.blogPost()}
-                    element={<BlogPostPage />}
-                  />
-                  <Route path={ROUTES.news} element={<BlogPage />} />
-                  <Route path={ROUTES.services} element={<ServicesPage />} />
-                  <Route
-                    path={ROUTES.serviceDetail()}
-                    element={<ServiceDetailPage />}
-                  />
-                  <Route path={ROUTES.about} element={<AboutPage />} />
-                  <Route path={ROUTES.contact} element={<ContactPage />} />
-                  <Route path={ROUTES.pricing} element={<PricingPage />} />
-                  <Route path={ROUTES.community} element={<CommunityPage />} />
-                  <Route path={ROUTES.certificates} element={<CertificatesPage />} />
-
-                  {/* Extra Public Pages */}
-                  <Route path={ROUTES.groups} element={<GroupsPage />} />
-                  <Route path={ROUTES.groupDetail()} element={<GroupDetailPage />} />
-                  <Route path={ROUTES.events} element={<EventsPage />} />
-                  <Route path={ROUTES.eventDetail()} element={<EventDetailPage />} />
-                  <Route path={ROUTES.networking} element={<NetworkingPage />} />
-                  <Route path={ROUTES.partners} element={<PartnersPage />} />
-                  <Route path={ROUTES.resources} element={<ResourcesPage />} />
-                  <Route path={ROUTES.projects} element={<ProjectsPage />} />
-
-                  {/* Auth Routes */}
-                  <Route path="/auth/*" element={<AuthPage />} />
-
-                  {/* Landing Pages */}
-                  <Route
-                    path={ROUTES.landingPage()}
-                    element={<LandingPage />}
-                  />
-
-                  {/* Newsletter */}
-                  <Route
-                    path={ROUTES.newsletterUnsubscribe}
-                    element={<NewsletterUnsubscribePage />}
-                  />
-
-                  {/* User Dashboard */}
-                  <Route path={ROUTES.dashboard} element={<DashboardPage />} />
-                  <Route
-                    path={ROUTES.dashboards.student}
-                    element={<StudentDashboardPage />}
+                    index
+                    element={<Navigate to={ROUTES.admin.marketing} replace />}
                   />
                   <Route
-                    path={ROUTES.dashboards.teacher}
-                    element={<TeacherDashboardPage />}
+                    path={ROUTES.admin.marketing}
+                    element={<MarketingDashboard />}
                   />
                   <Route
-                    path={ROUTES.dashboards.client}
-                    element={<ClientDashboardPage />}
+                    path={ROUTES.admin.landingPages}
+                    element={<LandingPageBuilder />}
                   />
                   <Route
-                    path={ROUTES.dashboards.settings}
-                    element={<DashboardSettingsPage />}
+                    path={ROUTES.admin.landingPageNew}
+                    element={<LandingPageBuilder />}
                   />
                   <Route
-                    path={ROUTES.dashboards.notifications}
-                    element={<NotificationsPage />}
+                    path={ROUTES.admin.landingPageDetail()}
+                    element={<LandingPageBuilder />}
                   />
+                </Route>
 
-                  {/* Optional Teacher Area */}
-                  <Route path={ROUTES.teacher} element={<TeacherDashboardPage />} />
+                {/* 404 */}
+                <Route path={ROUTES.notFound} element={<NotFoundPage />} />
+              </Routes>
 
-                  {/* Admin Routes */}
-                  <Route path={ROUTES.admin.root} element={<AdminLayout />}>
-                    <Route
-                      index
-                      element={
-                        <Navigate to={ROUTES.admin.marketing} replace />
-                      }
-                    />
-                    <Route
-                      path={ROUTES.admin.marketing}
-                      element={<MarketingDashboard />}
-                    />
-                    <Route
-                      path={ROUTES.admin.landingPages}
-                      element={<LandingPageBuilder />}
-                    />
-                    <Route
-                      path={ROUTES.admin.landingPageNew}
-                      element={<LandingPageBuilder />}
-                    />
-                    <Route
-                      path={ROUTES.admin.landingPageDetail()}
-                      element={<LandingPageBuilder />}
-                    />
-                  </Route>
+              {/* Global Components */}
+              <FloatingNewsletterPopup />
+              <Toaster />
+            </div>
+          </Router>
 
-                  {/* 404 */}
-                  <Route path={ROUTES.notFound} element={<NotFoundPage />} />
-                </Routes>
-
-                {/* Global Components */}
-                <FloatingNewsletterPopup />
-                <Toaster />
-              </div>
-            </Router>
-
-            {/* Dev Tools */}
-            {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
-          </AuthProvider>
-        </SupabaseProvider>
+          {/* Dev Tools */}
+          {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+        </AuthProvider>
       </QueryClientProvider>
     </HelmetProvider>
   );

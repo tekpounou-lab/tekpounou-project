@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+// src/providers/ThemeProvider.tsx
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback
+} from 'react';
 import { SunIcon, MoonIcon, ComputerDesktopIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -15,9 +22,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const useTheme = () => {
   const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
+  if (!context) throw new Error('useTheme must be used within a ThemeProvider');
   return context;
 };
 
@@ -35,50 +40,48 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   const [actualTheme, setActualTheme] = useState<'light' | 'dark'>('light');
 
-  const setTheme = (newTheme: Theme) => {
+  const getSystemTheme = useCallback((): 'light' | 'dark' => {
+    if (typeof window === 'undefined') return 'light';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }, []);
+
+  const applyTheme = useCallback((themeToApply: 'light' | 'dark') => {
+    if (typeof document === 'undefined') return;
+    const root = document.documentElement;
+    setActualTheme(themeToApply);
+    if (themeToApply === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+  }, []);
+
+  const setTheme = useCallback((newTheme: Theme) => {
     setThemeState(newTheme);
-    localStorage.setItem('tek-pou-nou-theme', newTheme);
-  };
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('tek-pou-nou-theme', newTheme);
+    }
+  }, []);
 
   useEffect(() => {
-    const root = document.documentElement;
-    
-    const getSystemTheme = (): 'light' | 'dark' => {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    };
-
-    const applyTheme = (themeToApply: 'light' | 'dark') => {
-      setActualTheme(themeToApply);
-      if (themeToApply === 'dark') {
-        root.classList.add('dark');
-      } else {
-        root.classList.remove('dark');
-      }
-    };
-
     if (theme === 'system') {
-      applyTheme(getSystemTheme());
-      
+      const systemTheme = getSystemTheme();
+      applyTheme(systemTheme);
+
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
       const handleChange = (e: MediaQueryListEvent) => {
         applyTheme(e.matches ? 'dark' : 'light');
       };
-      
+
       mediaQuery.addEventListener('change', handleChange);
       return () => mediaQuery.removeEventListener('change', handleChange);
     } else {
       applyTheme(theme);
     }
-  }, [theme]);
-
-  const value = {
-    theme,
-    setTheme,
-    actualTheme
-  };
+  }, [theme, applyTheme, getSystemTheme]);
 
   return (
-    <ThemeContext.Provider value={value}>
+    <ThemeContext.Provider value={{ theme, setTheme, actualTheme }}>
       {children}
     </ThemeContext.Provider>
   );
@@ -101,15 +104,20 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({
       <motion.button
         onClick={() => setTheme(actualTheme === 'dark' ? 'light' : 'dark')}
         className={`
-          p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100
+          p-2 rounded-lg transition-all duration-200
+          text-gray-600 hover:text-gray-900 hover:bg-gray-100
           dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-700
           focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500
-          transition-all duration-200 ${className}
+          ${className}
         `}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        aria-label={`Switch to ${actualTheme === 'dark' ? 'light' : 'dark'} mode`}
-        title={`Switch to ${actualTheme === 'dark' ? 'light' : 'dark'} mode`}
+        aria-label={t('profile.switchTheme', {
+          mode: actualTheme === 'dark' ? 'light' : 'dark'
+        })}
+        title={t('profile.switchTheme', {
+          mode: actualTheme === 'dark' ? 'light' : 'dark'
+        })}
       >
         <motion.div
           key={actualTheme}
@@ -131,7 +139,7 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({
     const options = [
       { value: 'light' as Theme, icon: SunIcon, label: t('profile.lightMode') },
       { value: 'dark' as Theme, icon: MoonIcon, label: t('profile.darkMode') },
-      { value: 'system' as Theme, icon: ComputerDesktopIcon, label: 'System' }
+      { value: 'system' as Theme, icon: ComputerDesktopIcon, label: t('profile.systemMode', 'System') }
     ];
 
     return (
@@ -145,12 +153,12 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({
             className={`
               px-3 py-2 text-sm font-medium rounded-md transition-all duration-200
               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500
-              ${theme === value 
-                ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-md' 
+              ${theme === value
+                ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-md'
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-700'
               }
             `}
-            aria-current={theme === value ? 'true' : 'false'}
+            aria-pressed={theme === value}
             title={label}
           >
             <Icon className="w-4 h-4" aria-hidden="true" />
@@ -161,8 +169,5 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({
     );
   }
 
-  // Default: Simple toggle for now (can extend to dropdown later)
-  return (
-    <ThemeSwitcher variant="toggle" className={className} />
-  );
+  return <ThemeSwitcher variant="toggle" className={className} />;
 };

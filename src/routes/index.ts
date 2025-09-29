@@ -81,9 +81,6 @@ export const ROUTES = {
     landingPageDetail: (id: string | number = ":id") => `/admin/landing-pages/${id}`,
   },
 
-  // Teacher area
-  teacher: "/teacher",
-
   // Catch-all (404)
   notFound: "*",
 } as const;
