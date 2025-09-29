@@ -3,7 +3,6 @@ import React from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 
-
 interface LayoutProps {
   children: React.ReactNode;
 }
@@ -18,4 +17,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   );
 };
 
+// 👇 Export both default and named
 export default Layout;
+export { Layout };

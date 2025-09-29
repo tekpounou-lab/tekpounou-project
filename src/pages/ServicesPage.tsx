@@ -1,19 +1,27 @@
 // src/pages/ServicesPage.tsx
 import React, { useEffect, useState } from 'react';
-import { MapPin, Phone, Mail, Clock, DollarSign, Star, Sparkles } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import { MapPin, Clock, DollarSign, Star, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Service } from '@/types';
-import { formatCurrency } from '@/utils';
 import { motion } from 'framer-motion';
 import Layout from '@/components/layout/Layout';
 
+// Extend the base Service type with UI-only fields
+interface ServiceWithUI extends Service {
+  title: string;
+  service_type: string;
+  providerName: string; // ✅ safe string, instead of overwriting Profile
+  location: string;
+  timeline_days: number;
+  rating: number;
+  reviews: number;
+  price_range: string;
+}
+
 const ServicesPage: React.FC = () => {
-  const [services, setServices] = useState<Service[]>([]);
-  const [featuredServices, setFeaturedServices] = useState<Service[]>([]);
-  const [regularServices, setRegularServices] = useState<Service[]>([]);
+  const [featuredServices, setFeaturedServices] = useState<ServiceWithUI[]>([]);
+  const [regularServices, setRegularServices] = useState<ServiceWithUI[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,31 +47,23 @@ const ServicesPage: React.FC = () => {
 
         if (error) throw error;
 
-        // Transform to match your UI structure
-        const transformedServices = (data || []).map(service => ({
-          id: service.id,
+        const transformedServices: ServiceWithUI[] = (data || []).map((service: any) => ({
+          ...service,
           title: service.name,
-          description: service.description,
           service_type: service.category,
-          provider: service.profiles?.display_name || 'Provider',
-          price: 0, // Price range string, not number
-          pricing_model: 'fixed',
+          providerName:
+            Array.isArray(service.profiles) && service.profiles.length > 0
+              ? service.profiles[0].display_name
+              : 'Unknown Provider',
           location: 'Haiti',
-          contact_email: '',
-          contact_phone: '',
-          is_featured: service.is_featured || false,
-          tags: [],
-          requirements: [],
-          deliverables: [],
           timeline_days: 14,
           rating: 4.8,
           reviews: Math.floor(Math.random() * 50) + 10,
-          price_range: service.price_range
+          price_range: service.price_range ?? 'N/A',
         }));
 
-        setServices(transformedServices);
-        setFeaturedServices(transformedServices.filter(s => s.is_featured));
-        setRegularServices(transformedServices.filter(s => !s.is_featured));
+        setFeaturedServices(transformedServices.filter((s) => s.is_featured));
+        setRegularServices(transformedServices.filter((s) => !s.is_featured));
       } catch (err) {
         console.error('Error fetching services:', err);
         setError('Failed to load services. Please try again later.');
@@ -95,8 +95,8 @@ const ServicesPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
             <p className="text-destructive">{error}</p>
-            <Button 
-              onClick={() => window.location.reload()} 
+            <Button
+              onClick={() => window.location.reload()}
               className="mt-4 tpn-gradient text-primary-foreground"
             >
               Retry
@@ -176,18 +176,18 @@ const ServicesPage: React.FC = () => {
                         <div className="flex items-center">
                           <Star className="h-4 w-4 text-yellow-500 mr-1 fill-current" />
                           <span className="text-sm font-medium">{service.rating}</span>
-                          <span className="text-sm text-muted-foreground ml-1">({service.reviews})</span>
+                          <span className="text-sm text-muted-foreground ml-1">
+                            ({service.reviews})
+                          </span>
                         </div>
                       </div>
                       <h3 className="text-xl font-semibold text-foreground">
                         {service.title}
                       </h3>
                     </div>
-                    
-                    <p className="text-muted-foreground mb-4">
-                      {service.description}
-                    </p>
-                    
+
+                    <p className="text-muted-foreground mb-4">{service.description}</p>
+
                     <div className="space-y-2 mb-4 text-sm text-muted-foreground">
                       <div className="flex items-center">
                         <MapPin className="h-4 w-4 mr-2" />
@@ -202,7 +202,7 @@ const ServicesPage: React.FC = () => {
                         {service.price_range}
                       </div>
                     </div>
-                    
+
                     <div className="flex space-x-3">
                       <Button size="sm" className="flex-1 tpn-gradient text-primary-foreground">
                         Kontakt Founisè a
@@ -242,15 +242,13 @@ const ServicesPage: React.FC = () => {
                       <span className="text-sm font-medium">{service.rating}</span>
                     </div>
                   </div>
-                  
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    {service.title}
-                  </h3>
-                  
+
+                  <h3 className="text-lg font-semibold text-foreground mb-2">{service.title}</h3>
+
                   <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
                     {service.description}
                   </p>
-                  
+
                   <div className="space-y-1 mb-4 text-sm text-muted-foreground">
                     <div className="flex items-center">
                       <MapPin className="h-3 w-3 mr-1" />
@@ -262,17 +260,13 @@ const ServicesPage: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-accent">
-                      {service.price_range}
-                    </span>
-                    <span className="text-sm text-muted-foreground">
-                      {service.reviews} reyèy
-                    </span>
+                    <span className="text-lg font-bold text-accent">{service.price_range}</span>
+                    <span className="text-sm text-muted-foreground">{service.reviews} reyèy</span>
                   </div>
-                  
+
                   <div className="flex space-x-2">
                     <Button size="sm" className="flex-1 tpn-gradient text-primary-foreground">
                       Kontakt

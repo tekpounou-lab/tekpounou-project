@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/Card';
 import { useAuthStore } from '@/stores/authStore';
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Layout } from '@/components/layout/Layout'; // ✅ Use Layout
+import  Layout  from '@/components/layout/Layout';
 
 interface Course {
   id: string;
