@@ -7,7 +7,7 @@ import type { Session } from '@supabase/supabase-js';
 interface AuthState {
   user: User | null;
   profile: Profile | null;
-  session: Session | null; // ✅ add session
+  session: Session | null;
   isLoading: boolean;
   isAuthenticated: boolean;
 
@@ -24,8 +24,14 @@ interface AuthState {
   initialize: () => Promise<void>;
   setUser: (user: User | null) => void;
   setProfile: (profile: Profile | null) => void;
-  setSession: (session: Session | null) => void; // ✅ setter
+  setSession: (session: Session | null) => void;
   setLoading: (loading: boolean) => void;
+
+  // OAuth
+  signInWithOAuth: (
+    provider: 'google' | 'github',
+    redirectTo?: string
+  ) => Promise<{ error?: string }>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -33,7 +39,7 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       user: null,
       profile: null,
-      session: null, // ✅
+      session: null,
       isLoading: true,
       isAuthenticated: false,
 
@@ -46,12 +52,9 @@ export const useAuthStore = create<AuthState>()(
             return { error: error.message };
           }
 
-          if (data.session) {
-            set({ session: data.session }); // ✅ store session
-          }
+          if (data.session) set({ session: data.session });
 
           if (data.user) {
-            // Get user + profile
             const { data: userData } = await supabase
               .from('users')
               .select('*')
@@ -64,7 +67,6 @@ export const useAuthStore = create<AuthState>()(
               .eq('id', data.user.id)
               .single();
 
-            // Update last login
             await supabase
               .from('users')
               .update({ last_login: new Date().toISOString() })
@@ -97,14 +99,13 @@ export const useAuthStore = create<AuthState>()(
             display_name: displayName,
             preferred_language: preferredLanguage,
           });
+
           if (error) {
             set({ isLoading: false });
             return { error: error.message };
           }
 
-          if (data.session) {
-            set({ session: data.session }); // ✅
-          }
+          if (data.session) set({ session: data.session });
 
           if (data.user) {
             await supabase.from('users').insert({
@@ -136,7 +137,7 @@ export const useAuthStore = create<AuthState>()(
           set({
             user: null,
             profile: null,
-            session: null, // ✅ clear session
+            session: null,
             isAuthenticated: false,
             isLoading: false,
           });
@@ -172,9 +173,7 @@ export const useAuthStore = create<AuthState>()(
             data: { session },
           } = await supabase.auth.getSession();
 
-          if (session) {
-            set({ session }); // ✅ keep session
-          }
+          if (session) set({ session });
 
           if (session?.user) {
             const { data: userData } = await supabase
@@ -210,15 +209,28 @@ export const useAuthStore = create<AuthState>()(
 
       setUser: (user) => set({ user, isAuthenticated: !!user }),
       setProfile: (profile) => set({ profile }),
-      setSession: (session) => set({ session }), // ✅
+      setSession: (session) => set({ session }),
       setLoading: (isLoading) => set({ isLoading }),
+
+      // OAuth login
+      signInWithOAuth: async (provider, redirectTo) => {
+        try {
+          const { error } = await auth.signInWithProvider(provider, {
+            redirectTo,
+          });
+          if (error) return { error: error.message };
+          return {};
+        } catch (err) {
+          return { error: 'An unexpected error occurred' };
+        }
+      },
     }),
     {
       name: 'auth-storage',
       partialize: (state) => ({
         user: state.user,
         profile: state.profile,
-        session: state.session, // ✅ persist session
+        session: state.session,
         isAuthenticated: state.isAuthenticated,
       }),
     }
@@ -230,7 +242,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
   const { setUser, setProfile, setSession, setLoading } = useAuthStore.getState();
 
   if (event === 'SIGNED_IN' && session?.user) {
-    setSession(session); // ✅ keep session
+    setSession(session);
     const { data: userData } = await supabase
       .from('users')
       .select('*')
@@ -250,7 +262,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
   } else if (event === 'SIGNED_OUT') {
     setUser(null);
     setProfile(null);
-    setSession(null); // ✅ clear
+    setSession(null);
   }
 
   setLoading(false);
