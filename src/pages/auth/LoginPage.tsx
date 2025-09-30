@@ -3,7 +3,8 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 
-import { Eye, EyeOff, LogIn, Sparkles, Github, Google } from "lucide-react";
+import { Eye, EyeOff, LogIn, Sparkles, Github } from "lucide-react";
+import { FcGoogle } from "react-icons/fc";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
@@ -38,11 +39,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
   };
 
   const handleOAuthLogin = async (provider: "google" | "github") => {
-    try {
-      await signInWithProvider(provider);
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message || "OAuth login failed");
+    setError("");
+    const result = await signInWithProvider(provider, window.location.origin + ROUTES.dashboard);
+    if (result.error) {
+      setError(result.error);
     }
   };
 
@@ -80,7 +80,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
 
           {/* Error */}
           {error && (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mb-5 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="mb-5 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
               <p className="text-sm text-destructive-foreground">{error}</p>
             </motion.div>
           )}
@@ -128,11 +128,19 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSuccess }) => {
 
           {/* OAuth Login */}
           <div className="mt-4 space-y-2">
-            <Button type="button" onClick={() => handleOAuthLogin("google")} className="w-full flex items-center justify-center space-x-2 border border-border bg-white hover:bg-gray-50">
-              <Google className="w-4 h-4" />
+            <Button
+              type="button"
+              onClick={() => handleOAuthLogin("google")}
+              className="w-full flex items-center justify-center space-x-2 border border-border bg-white hover:bg-gray-50"
+            >
+              <FcGoogle className="w-4 h-4" />
               <span>Sign in with Google</span>
             </Button>
-            <Button type="button" onClick={() => handleOAuthLogin("github")} className="w-full flex items-center justify-center space-x-2 border border-border bg-white hover:bg-gray-50">
+            <Button
+              type="button"
+              onClick={() => handleOAuthLogin("github")}
+              className="w-full flex items-center justify-center space-x-2 border border-border bg-white hover:bg-gray-50"
+            >
               <Github className="w-4 h-4" />
               <span>Sign in with GitHub</span>
             </Button>

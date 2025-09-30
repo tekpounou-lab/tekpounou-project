@@ -1,3 +1,4 @@
+// src/stores/authStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User, Profile, LanguageCode } from '@/types';
@@ -22,6 +23,8 @@ interface AuthState {
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error?: string }>;
   initialize: () => Promise<void>;
+
+  // Setters
   setUser: (user: User | null) => void;
   setProfile: (profile: Profile | null) => void;
   setSession: (session: Session | null) => void;
@@ -29,6 +32,10 @@ interface AuthState {
 
   // OAuth
   signInWithOAuth: (
+    provider: 'google' | 'github',
+    redirectTo?: string
+  ) => Promise<{ error?: string }>;
+  signInWithProvider: (
     provider: 'google' | 'github',
     redirectTo?: string
   ) => Promise<{ error?: string }>;
@@ -43,14 +50,12 @@ export const useAuthStore = create<AuthState>()(
       isLoading: true,
       isAuthenticated: false,
 
-      signIn: async (email: string, password: string) => {
+      // Sign in with email/password
+      signIn: async (email, password) => {
         set({ isLoading: true });
         try {
-          const { data, error } = await auth.signIn(email, password);
-          if (error) {
-            set({ isLoading: false });
-            return { error: error.message };
-          }
+          const { data, error } = await auth.signIn({ email, password }); // ✅ pass object
+          if (error) return { error: error.message };
 
           if (data.session) set({ session: data.session });
 
@@ -81,31 +86,21 @@ export const useAuthStore = create<AuthState>()(
           }
 
           return {};
-        } catch (error) {
+        } catch (err) {
           set({ isLoading: false });
           return { error: 'An unexpected error occurred' };
         }
       },
 
-      signUp: async (
-        email: string,
-        password: string,
-        displayName?: string,
-        preferredLanguage: LanguageCode = 'ht-HT'
-      ) => {
+      // Sign up new user
+      signUp: async (email, password, displayName, preferredLanguage = 'ht-HT') => {
         set({ isLoading: true });
         try {
-          const { data, error } = await auth.signUp(email, password, {
-            display_name: displayName,
-            preferred_language: preferredLanguage,
-          });
-
-          if (error) {
-            set({ isLoading: false });
-            return { error: error.message };
-          }
-
-          if (data.session) set({ session: data.session });
+          const { data, error } = await auth.signUp(
+            { email, password }, // ✅ pass object
+            { data: { display_name: displayName, preferred_language: preferredLanguage } }
+          );
+          if (error) return { error: error.message };
 
           if (data.user) {
             await supabase.from('users').insert({
@@ -122,14 +117,16 @@ export const useAuthStore = create<AuthState>()(
             });
           }
 
+          if (data.session) set({ session: data.session });
           set({ isLoading: false });
           return {};
-        } catch (error) {
+        } catch (err) {
           set({ isLoading: false });
           return { error: 'An unexpected error occurred' };
         }
       },
 
+      // Sign out
       signOut: async () => {
         set({ isLoading: true });
         try {
@@ -141,13 +138,14 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: false,
             isLoading: false,
           });
-        } catch (error) {
-          console.error('Error signing out:', error);
+        } catch (err) {
+          console.error('Error signing out:', err);
           set({ isLoading: false });
         }
       },
 
-      updateProfile: async (updates: Partial<Profile>) => {
+      // Update profile
+      updateProfile: async (updates) => {
         const { user } = get();
         if (!user) return { error: 'Not authenticated' };
         try {
@@ -161,18 +159,16 @@ export const useAuthStore = create<AuthState>()(
             profile: state.profile ? { ...state.profile, ...updates } : null,
           }));
           return {};
-        } catch {
+        } catch (err) {
           return { error: 'An unexpected error occurred' };
         }
       },
 
+      // Initialize store
       initialize: async () => {
         set({ isLoading: true });
         try {
-          const {
-            data: { session },
-          } = await supabase.auth.getSession();
-
+          const { data: { session } } = await supabase.auth.getSession();
           if (session) set({ session });
 
           if (session?.user) {
@@ -188,25 +184,22 @@ export const useAuthStore = create<AuthState>()(
               .eq('id', session.user.id)
               .single();
 
-            if (userData) {
-              set({
-                user: userData,
-                profile: profileData,
-                isAuthenticated: true,
-                isLoading: false,
-              });
-            } else {
-              set({ isLoading: false });
-            }
+            set({
+              user: userData,
+              profile: profileData,
+              isAuthenticated: !!userData,
+              isLoading: false,
+            });
           } else {
             set({ isLoading: false });
           }
-        } catch (error) {
-          console.error('Error initializing auth:', error);
+        } catch (err) {
+          console.error('Error initializing auth:', err);
           set({ isLoading: false });
         }
       },
 
+      // Setters
       setUser: (user) => set({ user, isAuthenticated: !!user }),
       setProfile: (profile) => set({ profile }),
       setSession: (session) => set({ session }),
@@ -215,14 +208,17 @@ export const useAuthStore = create<AuthState>()(
       // OAuth login
       signInWithOAuth: async (provider, redirectTo) => {
         try {
-          const { error } = await auth.signInWithProvider(provider, {
-            redirectTo,
-          });
+          const { error } = await auth.signInWithProvider(provider, { redirectTo });
           if (error) return { error: error.message };
           return {};
         } catch (err) {
           return { error: 'An unexpected error occurred' };
         }
+      },
+
+      // Alias for LoginPage
+      signInWithProvider: async (provider, redirectTo) => {
+        return get().signInWithOAuth(provider, redirectTo);
       },
     }),
     {
@@ -243,6 +239,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
 
   if (event === 'SIGNED_IN' && session?.user) {
     setSession(session);
+
     const { data: userData } = await supabase
       .from('users')
       .select('*')
@@ -255,10 +252,8 @@ supabase.auth.onAuthStateChange(async (event, session) => {
       .eq('id', session.user.id)
       .single();
 
-    if (userData) {
-      setUser(userData);
-      setProfile(profileData);
-    }
+    setUser(userData || null);
+    setProfile(profileData || null);
   } else if (event === 'SIGNED_OUT') {
     setUser(null);
     setProfile(null);
