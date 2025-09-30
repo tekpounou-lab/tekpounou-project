@@ -11,9 +11,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "./components/ui/Toaster";
 
-// Providers
-import { useSupabaseClient } from "./components/providers/SupabaseProvider";
-import { AuthProvider } from "./components/providers/AuthProvider";
+// Stores
+import { useAuthStore } from "@/stores/authStore";
 
 // Components
 import { SEOHead, defaultSEOConfigs } from "./components/common/SEOHead";
@@ -66,25 +65,20 @@ import { LandingPageBuilder } from "./components/admin/LandingPageBuilder";
 // Styles
 import "./index.css";
 
+// React Query Client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000,
-      gcTime: 10 * 60 * 1000,
+      
     },
   },
 });
 
-// Analytics initialization component
+// Analytics initialization
 function AnalyticsInit() {
-  const supabase = useSupabaseClient();
   const location = useLocation();
   const { trackPageView } = useAnalytics();
-
-  useEffect(() => {
-    const gaTrackingId = import.meta.env.VITE_GA_TRACKING_ID;
-    analytics.init(supabase, gaTrackingId);
-  }, [supabase]);
 
   useEffect(() => {
     trackPageView({
@@ -100,7 +94,6 @@ function AnalyticsInit() {
 // SEO manager
 function SEOManager() {
   const location = useLocation();
-
   const getSEOForRoute = (pathname: string) => {
     if (pathname === ROUTES.home) return defaultSEOConfigs.home;
     if (pathname.startsWith(ROUTES.courses)) return defaultSEOConfigs.courses;
@@ -117,128 +110,161 @@ function SEOManager() {
   return <SEOHead {...seoConfig} />;
 }
 
+// Private route wrapper
+function PrivateRoute({ children }: { children: JSX.Element }) {
+  const { isAuthenticated, isLoading } = useAuthStore();
+  if (isLoading) return <div className="p-10 text-center">Loading...</div>;
+  if (!isAuthenticated) return <Navigate to="/auth/login" replace />;
+  return children;
+}
+
 function App() {
+  const initializeAuth = useAuthStore((state) => state.initialize);
+
+  useEffect(() => {
+    initializeAuth();
+  }, [initializeAuth]);
+
   useReferralTracking();
 
   return (
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
-        {/* 👇 Removed SupabaseProvider (already in main.tsx) */}
-        <AuthProvider>
-          <Router>
-            <div className="min-h-screen bg-gray-50">
-              {/* SEO + Analytics */}
-              <SEOManager />
-              <AnalyticsInit />
+        <Router>
+          <div className="min-h-screen bg-gray-50">
+            {/* SEO + Analytics */}
+            <SEOManager />
+            <AnalyticsInit />
 
-              {/* Routes */}
-              <Routes>
-                {/* Public Routes */}
-                <Route path={ROUTES.home} element={<HomePage />} />
-                <Route path={ROUTES.courses} element={<CoursesPage />} />
+            {/* Routes */}
+            <Routes>
+              {/* Public Routes */}
+              <Route path={ROUTES.home} element={<HomePage />} />
+              <Route path={ROUTES.courses} element={<CoursesPage />} />
+              <Route
+                path={ROUTES.courseDetail()}
+                element={<CourseDetailPage />}
+              />
+              <Route path={ROUTES.blog} element={<BlogPage />} />
+              <Route path={ROUTES.blogPost()} element={<BlogPostPage />} />
+              <Route path={ROUTES.news} element={<BlogPage />} />
+              <Route path={ROUTES.services} element={<ServicesPage />} />
+              <Route
+                path={ROUTES.serviceDetail()}
+                element={<ServiceDetailPage />}
+              />
+              <Route path={ROUTES.about} element={<AboutPage />} />
+              <Route path={ROUTES.contact} element={<ContactPage />} />
+              <Route path={ROUTES.pricing} element={<PricingPage />} />
+              <Route path={ROUTES.community} element={<CommunityPage />} />
+              <Route path={ROUTES.certificates} element={<CertificatesPage />} />
+
+              {/* Extra Public Pages */}
+              <Route path={ROUTES.groups} element={<GroupsPage />} />
+              <Route path={ROUTES.groupDetail()} element={<GroupDetailPage />} />
+              <Route path={ROUTES.events} element={<EventsPage />} />
+              <Route path={ROUTES.eventDetail()} element={<EventDetailPage />} />
+              <Route path={ROUTES.networking} element={<NetworkingPage />} />
+              <Route path={ROUTES.partners} element={<PartnersPage />} />
+              <Route path={ROUTES.resources} element={<ResourcesPage />} />
+              <Route path={ROUTES.projects} element={<ProjectsPage />} />
+
+              {/* Auth Routes */}
+              <Route path="/auth/*" element={<AuthPage />} />
+
+              {/* Landing Pages */}
+              <Route path={ROUTES.landingPage()} element={<LandingPage />} />
+
+              {/* Newsletter */}
+              <Route
+                path={ROUTES.newsletterUnsubscribe}
+                element={<NewsletterUnsubscribePage />}
+              />
+
+              {/* User Dashboards (Protected) */}
+              <Route
+                path={ROUTES.dashboard}
+                element={
+                  <PrivateRoute>
+                    <DashboardPage />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path={ROUTES.dashboards.student}
+                element={
+                  <PrivateRoute>
+                    <StudentDashboardPage />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path={ROUTES.dashboards.teacher}
+                element={
+                  <PrivateRoute>
+                    <TeacherDashboardPage />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path={ROUTES.dashboards.client}
+                element={
+                  <PrivateRoute>
+                    <ClientDashboardPage />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path={ROUTES.dashboards.settings}
+                element={
+                  <PrivateRoute>
+                    <DashboardSettingsPage />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path={ROUTES.dashboards.notifications}
+                element={
+                  <PrivateRoute>
+                    <NotificationsPage />
+                  </PrivateRoute>
+                }
+              />
+
+              {/* Admin Routes (Protected) */}
+              <Route
+                path={ROUTES.admin.root}
+                element={
+                  <PrivateRoute>
+                    <AdminLayout />
+                  </PrivateRoute>
+                }
+              >
                 <Route
-                  path={ROUTES.courseDetail()}
-                  element={<CourseDetailPage />}
+                  index
+                  element={<Navigate to={ROUTES.admin.marketing} replace />}
                 />
-                <Route path={ROUTES.blog} element={<BlogPage />} />
-                <Route path={ROUTES.blogPost()} element={<BlogPostPage />} />
-                <Route path={ROUTES.news} element={<BlogPage />} />
-                <Route path={ROUTES.services} element={<ServicesPage />} />
+                <Route path={ROUTES.admin.marketing} element={<MarketingDashboard />} />
+                <Route path={ROUTES.admin.landingPages} element={<LandingPageBuilder />} />
+                <Route path={ROUTES.admin.landingPageNew} element={<LandingPageBuilder />} />
                 <Route
-                  path={ROUTES.serviceDetail()}
-                  element={<ServiceDetailPage />}
+                  path={ROUTES.admin.landingPageDetail()}
+                  element={<LandingPageBuilder />}
                 />
-                <Route path={ROUTES.about} element={<AboutPage />} />
-                <Route path={ROUTES.contact} element={<ContactPage />} />
-                <Route path={ROUTES.pricing} element={<PricingPage />} />
-                <Route path={ROUTES.community} element={<CommunityPage />} />
-                <Route path={ROUTES.certificates} element={<CertificatesPage />} />
+              </Route>
 
-                {/* Extra Public Pages */}
-                <Route path={ROUTES.groups} element={<GroupsPage />} />
-                <Route path={ROUTES.groupDetail()} element={<GroupDetailPage />} />
-                <Route path={ROUTES.events} element={<EventsPage />} />
-                <Route path={ROUTES.eventDetail()} element={<EventDetailPage />} />
-                <Route path={ROUTES.networking} element={<NetworkingPage />} />
-                <Route path={ROUTES.partners} element={<PartnersPage />} />
-                <Route path={ROUTES.resources} element={<ResourcesPage />} />
-                <Route path={ROUTES.projects} element={<ProjectsPage />} />
+              {/* 404 */}
+              <Route path={ROUTES.notFound} element={<NotFoundPage />} />
+            </Routes>
 
-                {/* Auth Routes */}
-                <Route path="/auth/*" element={<AuthPage />} />
+            {/* Global Components */}
+            <FloatingNewsletterPopup />
+            <Toaster />
+          </div>
+        </Router>
 
-                {/* Landing Pages */}
-                <Route path={ROUTES.landingPage()} element={<LandingPage />} />
-
-                {/* Newsletter */}
-                <Route
-                  path={ROUTES.newsletterUnsubscribe}
-                  element={<NewsletterUnsubscribePage />}
-                />
-
-                {/* User Dashboard */}
-                <Route path={ROUTES.dashboard} element={<DashboardPage />} />
-                <Route
-                  path={ROUTES.dashboards.student}
-                  element={<StudentDashboardPage />}
-                />
-                <Route
-                  path={ROUTES.dashboards.teacher}
-                  element={<TeacherDashboardPage />}
-                />
-                <Route
-                  path={ROUTES.dashboards.client}
-                  element={<ClientDashboardPage />}
-                />
-                <Route
-                  path={ROUTES.dashboards.settings}
-                  element={<DashboardSettingsPage />}
-                />
-                <Route
-                  path={ROUTES.dashboards.notifications}
-                  element={<NotificationsPage />}
-                />
-
-                {/* Optional Teacher Area */}
-                <Route path={ROUTES.teacher} element={<TeacherDashboardPage />} />
-
-                {/* Admin Routes */}
-                <Route path={ROUTES.admin.root} element={<AdminLayout />}>
-                  <Route
-                    index
-                    element={<Navigate to={ROUTES.admin.marketing} replace />}
-                  />
-                  <Route
-                    path={ROUTES.admin.marketing}
-                    element={<MarketingDashboard />}
-                  />
-                  <Route
-                    path={ROUTES.admin.landingPages}
-                    element={<LandingPageBuilder />}
-                  />
-                  <Route
-                    path={ROUTES.admin.landingPageNew}
-                    element={<LandingPageBuilder />}
-                  />
-                  <Route
-                    path={ROUTES.admin.landingPageDetail()}
-                    element={<LandingPageBuilder />}
-                  />
-                </Route>
-
-                {/* 404 */}
-                <Route path={ROUTES.notFound} element={<NotFoundPage />} />
-              </Routes>
-
-              {/* Global Components */}
-              <FloatingNewsletterPopup />
-              <Toaster />
-            </div>
-          </Router>
-
-          {/* Dev Tools */}
-          {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
-        </AuthProvider>
+        {/* Dev Tools */}
+        {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
       </QueryClientProvider>
     </HelmetProvider>
   );

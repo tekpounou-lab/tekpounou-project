@@ -8,7 +8,7 @@ export type ApplicationStatus = 'pending' | 'approved' | 'rejected';
 export interface User {
   id: string;
   email: string;
-  roles: UserRole;
+  roles?: UserRole[];
   created_at: string;
   updated_at: string;
   last_login?: string;

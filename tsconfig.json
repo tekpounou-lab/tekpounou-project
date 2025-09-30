@@ -1,32 +1,29 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-    
-    
-    /* Bundler mode */
-    "moduleResolution": "bundler",
+    "target": "ES2020",                       // Modern JS features
+    "useDefineForClassFields": true,          // Recommended for React 18+
+    "lib": ["ES2020", "DOM", "DOM.Iterable"], // DOM + JS libs
+    "module": "ESNext",                       // For bundlers like Vite/Webpack
+    "moduleResolution": "bundler",            // Bundler-friendly resolution
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
-    
-    /* Linting */
+    "isolatedModules": true,                   // Required for React/TSX
+    "noEmit": true,                            // TS only for type checking
+    "jsx": "react-jsx",                        // React 17+ JSX transform
+
+    /* Strictness */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    
+    "skipLibCheck": true,                      // Ignore type checking for node_modules
+
     /* Path mapping */
-    "baseUrl": ".",
+    "baseUrl": ".",                            
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["src/*"]                         // Allows import like "@/components/ui/Loading"
     }
   },
-  "include": ["src"],
+  "include": ["src"],                          // Only include source folder
   "references": [{ "path": "./tsconfig.node.json" }]
 }
