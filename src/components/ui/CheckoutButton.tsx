@@ -2,7 +2,11 @@ import { useState } from "react";
 import { createPaymentIntent, confirmPayment } from "@/lib/checkout";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
-export default function CheckoutButton({ courseId }: { courseId: string }) {
+type CheckoutButtonProps =
+  | { type: "course"; courseId: string }
+  | { type: "subscription"; planId: string };
+
+export default function CheckoutButton(props: CheckoutButtonProps) {
   const [loading, setLoading] = useState(false);
   const supabase = useSupabaseClient();
 
@@ -17,11 +21,18 @@ export default function CheckoutButton({ courseId }: { courseId: string }) {
       if (!session) throw new Error("Not logged in");
 
       // 1. Create PaymentIntent on backend
-      const { client_secret } = await createPaymentIntent(
-        "course",
-        { course_id: courseId },
-        session.access_token
-      );
+      const { client_secret } =
+        props.type === "course"
+          ? await createPaymentIntent(
+              "course",
+              { course_id: props.courseId },
+              session.access_token
+            )
+          : await createPaymentIntent(
+              "subscription",
+              { plan_id: props.planId },
+              session.access_token
+            );
 
       // 2. Confirm payment on frontend
       const paymentIntent = await confirmPayment(client_secret);
@@ -42,7 +53,11 @@ export default function CheckoutButton({ courseId }: { courseId: string }) {
       disabled={loading}
       className="bg-indigo-600 text-white px-4 py-2 rounded"
     >
-      {loading ? "Processing..." : "Buy Course"}
+      {loading
+        ? "Processing..."
+        : props.type === "course"
+        ? "Buy Course"
+        : "Subscribe"}
     </button>
   );
 }

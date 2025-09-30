@@ -1,32 +1,48 @@
-import React from 'react';
-import { cn } from '@/utils';
+// src/components/ui/Button.tsx
+import React from "react";
+import { cn } from "@/utils";
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'ghost' | 'outline';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: "primary" | "secondary" | "danger" | "success" | "ghost" | "outline";
+  size?: "sm" | "md" | "lg";
   isLoading?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'primary', size = 'md', isLoading, children, disabled, ...props }, ref) => {
-    const baseClasses = 'inline-flex items-center justify-center font-medium transition-colors duration-200 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
-    
-    const variants = {
-      primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500',
-      secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600',
-      danger: 'bg-danger-600 text-white hover:bg-danger-700 focus:ring-danger-500',
-      success: 'bg-success-600 text-white hover:bg-success-700 focus:ring-success-500',
-      ghost: 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800',
-      outline: 'border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-primary-500 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800',
+  (
+    {
+      className,
+      variant = "primary",
+      size = "md",
+      isLoading = false,
+      children,
+      disabled,
+      ...props
+    },
+    ref
+  ) => {
+    const baseClasses =
+      "inline-flex items-center justify-center font-medium transition-colors duration-200 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+
+    const variants: Record<NonNullable<ButtonProps["variant"]>, string> = {
+      primary: "bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500",
+      secondary:
+        "bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600",
+      danger: "bg-danger-600 text-white hover:bg-danger-700 focus:ring-danger-500",
+      success: "bg-success-600 text-white hover:bg-success-700 focus:ring-success-500",
+      ghost:
+        "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800",
+      outline:
+        "border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-primary-500 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800",
     };
-    
-    const sizes = {
-      sm: 'px-3 py-2 text-sm',
-      md: 'px-4 py-2 text-sm',
-      lg: 'px-6 py-3 text-base',
+
+    const sizes: Record<NonNullable<ButtonProps["size"]>, string> = {
+      sm: "px-3 py-2 text-sm",
+      md: "px-4 py-2 text-sm",
+      lg: "px-6 py-3 text-base",
     };
-    
+
     return (
       <button
         className={cn(
@@ -67,6 +83,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   }
 );
 
-Button.displayName = 'Button';
+Button.displayName = "Button";
 
 export { Button };

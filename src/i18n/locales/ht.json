@@ -144,5 +144,20 @@
     "budget": "Bidjè",
     "client": "Kliyèn",
     "provider": "Founisè"
+  },
+  "profile": {
+    "switchTheme": "Chanje Tèm"
+  },
+  "footer": {
+    "privacyPolicy": "Règleman sou vi prive",
+    "termsOfService": "Tèm Sèvis",
+    "contact": "Kontakte nou",
+    "madeWithLove": "Fè ak lanmou",
+    "aboutUs": "Sou nou",
+    "newsletter": "Bilten nouvèl",
+    "subscribeNewsletter": "Abònman nan bilten",
+    "followUs": "Swiv nou",
+    "forHaiti": "Pou Ayiti",
+    "allRightsReserved": "Tout dwa rezève"
   }
 }
